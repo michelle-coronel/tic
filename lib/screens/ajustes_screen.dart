@@ -1,13 +1,3 @@
-/*import 'package:flutter/material.dart';
-
-class AjustesScreen extends StatelessWidget {
-  const AjustesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Ajustes', style: TextStyle(fontSize: 24)));
-  }
-}*/
 import 'package:flutter/material.dart';
 
 class AjustesScreen extends StatelessWidget {
