@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "type": "opcion_multiple",
+    "question": "¿Qué es el hardware?",
+    "options": [
+      "Programas que usamos en la computadora",
+      "Partes físicas de la computadora",
+      "El Sistema Operativo"
+    ],
+    "answerIndex": 1,
+    "explanation": "El hardware es todo lo que puedes tocar en un dispositivo."
+  },
+  
+  {
+    "id": 2,
+    "type": "verdadero_falso",
+    "question": "La impresora convierte información digital en una copia física.",
+    "options": [
+      "Verdadero",
+      "Falso"
+    ],
+    "answerIndex": 0,
+    "explanation": "Una impresora es un periférico de salida que crea una representación física de los datos."
+  },
+   
+  {
+  "id": 3,
+  "type": "ordenar",
+  "question": "Seleccione el orden sobre el proceso de cómo funciona el dispositivo:\n1. La computadora procesa\n2. La impresora imprime\n3. Se recibe el documento físico\n4. El usuario envía el archivo\n",
+  "options": [
+    "4,1,2,3",
+    "4,2,3,1"
+  ],
+  "answerIndex": 0,
+  "explanation": "Has ordenado correctamente el proceso"
+}
+
+]
+
+
+
