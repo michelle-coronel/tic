@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'lecciones_screen.dart'; // aquí está la definición de Categoria
+
 import 'quiz_screen.dart';
+import '../models/categoria.dart';
 
 class DetalleCategoriaScreen extends StatelessWidget {
   final Categoria categoria;
@@ -11,6 +12,7 @@ class DetalleCategoriaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // El botón atrás automático aparece si hay navegación previa
         title: Text(
           categoria.nombre,
           style:
@@ -126,7 +128,7 @@ class DetalleCategoriaScreen extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                //Navega a QuizScreen (agrega import y ajusta ruta)
+                // Navega a QuizScreen (asegúrate de importar y ajustar ruta)
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const QuizScreen()),

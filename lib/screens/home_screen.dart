@@ -27,6 +27,32 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Widget _buildImageIconWithLine(String assetPath, bool isSelected) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          height: 3,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color.fromARGB(255, 157, 42, 219)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Image.asset(
+          assetPath,
+          height: 24,
+          color: isSelected
+              ? const Color.fromARGB(255, 157, 42, 219)
+              : const Color.fromARGB(255, 113, 111, 111),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
@@ -43,21 +69,43 @@ class _HomeScreenState extends State<HomeScreen> {
       body: screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.amber,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: const Color.fromARGB(255, 157, 42, 219),
+        unselectedItemColor: const Color.fromARGB(255, 113, 111, 111),
+        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.play_lesson),
+            icon: _buildImageIconWithLine(
+              'assets/icons/home_icon.png',
+              _currentIndex == 0,
+            ),
+            label: 'Inicio',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildImageIconWithLine(
+              'assets/icons/lecciones_icon.png',
+              _currentIndex == 1,
+            ),
             label: 'Lecciones',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.quiz), label: 'Quiz'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Ajustes'),
+          BottomNavigationBarItem(
+            icon: _buildImageIconWithLine(
+              'assets/icons/quiz_icon.png',
+              _currentIndex == 2,
+            ),
+            label: 'Quiz',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildImageIconWithLine(
+              'assets/icons/ajustes_icon.png',
+              _currentIndex == 3,
+            ),
+            label: 'Ajustes',
+          ),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'detalle_categoria_screen.dart';
+import 'detalle_categoria_screen.dart'; // Asegúrate de que esta clase use la versión correcta de Categoria
+import '../models/categoria.dart'; // Asegúrate de tener el modelo actualizado
 
 class LeccionesScreen extends StatelessWidget {
   const LeccionesScreen({super.key});
@@ -10,22 +11,36 @@ class LeccionesScreen extends StatelessWidget {
     final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
     final backgroundColor = theme.scaffoldBackgroundColor;
 
+    // Define colores para activo e inactivo según tema claro u oscuro
+    final Color colorActivo = theme.brightness == Brightness.dark
+        ? Colors.amberAccent
+        : Colors.black;
+    final Color colorInactivo = Colors.grey;
+
     final categorias = [
-      Categoria(nombre: 'Hardware', icono: Icons.devices, activo: true),
+      Categoria(
+        nombre: 'Hardware',
+        iconoPath: 'assets/icons/1_icon.png',
+        activo: true,
+      ),
       Categoria(
         nombre: 'Software',
-        icono: Icons.desktop_windows,
+        iconoPath: 'assets/icons/2_icon.png',
         activo: false,
       ),
       Categoria(
         nombre: 'Sistemas Operativos',
-        icono: Icons.memory,
+        iconoPath: 'assets/icons/3_icon.png',
         activo: false,
       ),
-      Categoria(nombre: 'Internet', icono: Icons.wifi, activo: false),
+      Categoria(
+        nombre: 'Internet',
+        iconoPath: 'assets/icons/4_icon.png',
+        activo: false,
+      ),
       Categoria(
         nombre: 'Actualizaciones de sistema',
-        icono: Icons.system_update,
+        iconoPath: 'assets/icons/5_icon.png',
         activo: false,
       ),
     ];
@@ -33,6 +48,7 @@ class LeccionesScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: backgroundColor,
         elevation: 0,
         title: Text(
@@ -59,7 +75,6 @@ class LeccionesScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               'Continúa los patrones',
-              // ignore: deprecated_member_use
               style: TextStyle(fontSize: 20, color: textColor.withOpacity(0.6)),
             ),
           ),
@@ -99,18 +114,24 @@ class LeccionesScreen extends StatelessWidget {
                   },
                   title: Row(
                     children: [
-                      Icon(
-                        categoria.icono,
-                        size: 90,
-                        color: categoria.activo ? textColor : Colors.grey,
+                      Image.asset(
+                        categoria.iconoPath,
+                        width: 85,
+                        height: 85,
+                        color: categoria.activo ? colorActivo : colorInactivo,
                       ),
                       const SizedBox(width: 14),
-                      Text(
-                        categoria.nombre,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: categoria.activo ? textColor : Colors.grey,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Text(
+                          categoria.nombre,
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: categoria.activo
+                                ? colorActivo
+                                : colorInactivo,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.none,
+                          ),
                         ),
                       ),
                     ],
@@ -123,12 +144,4 @@ class LeccionesScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class Categoria {
-  final String nombre;
-  final IconData icono;
-  final bool activo;
-
-  Categoria({required this.nombre, required this.icono, required this.activo});
 }
