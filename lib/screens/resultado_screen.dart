@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'detalle_categoria_screen.dart';
-import '../models/categoria.dart';
 import '../models/question.dart';
 import 'resultados_screen_hardware.dart';
 
@@ -122,37 +120,6 @@ class ResultadoScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Botón: Repetir Curso
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple.shade100,
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DetalleCategoriaScreen(
-                        categoria: Categoria(
-                          nombre: 'Hardware',
-                          iconoPath: 'assets/icons/1_icon.png', // ✅ corregido
-                          activo: true,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                child: const Text(
-                  'Repetir Curso',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
 
             // Botón: Ver resultados
             SizedBox(
