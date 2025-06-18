@@ -3,6 +3,7 @@ import 'inicio_screen.dart';
 import 'lecciones_screen.dart';
 import 'quiz_screen.dart';
 import 'ajustes_screen.dart';
+import '../models/categoria.dart'; // Asegúrate de importar tu modelo Categoria
 
 class HomeScreen extends StatefulWidget {
   final Function(bool) toggleTheme;
@@ -26,6 +27,35 @@ class _HomeScreenState extends State<HomeScreen> {
       _currentIndex = 1;
     });
   }
+
+  // Lista de categorías que se puede modificar para habilitar nuevos temas
+  final List<Categoria> categoriasIniciales = [
+    Categoria(
+      nombre: 'Hardware',
+      iconoPath: 'assets/icons/1_icon.png',
+      activo: true,
+    ),
+    Categoria(
+      nombre: 'Software',
+      iconoPath: 'assets/icons/2_icon.png',
+      activo: false,
+    ),
+    Categoria(
+      nombre: 'Sistemas Operativos',
+      iconoPath: 'assets/icons/3_icon.png',
+      activo: false,
+    ),
+    Categoria(
+      nombre: 'Internet',
+      iconoPath: 'assets/icons/4_icon.png',
+      activo: false,
+    ),
+    Categoria(
+      nombre: 'Actualizaciones de sistema',
+      iconoPath: 'assets/icons/5_icon.png',
+      activo: false,
+    ),
+  ];
 
   Widget _buildImageIconWithLine(String assetPath, bool isSelected) {
     return Column(
@@ -57,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final List<Widget> screens = [
       InicioScreen(onIniciarPressed: _goToLecciones),
-      const LeccionesScreen(),
+      LeccionesScreen(categorias: categoriasIniciales),
       const QuizScreen(),
       AjustesScreen(
         toggleTheme: widget.toggleTheme,
