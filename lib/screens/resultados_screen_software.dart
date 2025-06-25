@@ -155,12 +155,19 @@ class ResultadosScreenSoftware extends StatelessWidget {
                     if (question.explanation.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 6.0),
-                        child: Text(
-                          'Explicación: ${question.explanation}',
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontSize: 16,
-                            fontStyle: FontStyle.italic,
-                            color: theme.colorScheme.onPrimaryContainer,
+                        child: RichText(
+                          text: TextSpan(
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontSize: 16,
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                            children: [
+                              const TextSpan(
+                                text: 'Explicación: ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(text: question.explanation),
+                            ],
                           ),
                         ),
                       ),

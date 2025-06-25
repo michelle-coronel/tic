@@ -236,7 +236,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
-  Widget _buildArrastrar(Question q) {
+  /* Widget _buildArrastrar(Question q) {
     if (_dragItems.isEmpty) _initDragItemsIfNeeded();
 
     final textColor =
@@ -245,7 +245,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_current == 4 || _current == 5)
+        if (q.targets != null && q.targets!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
@@ -323,7 +323,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
           }).toList(),
         ),
         const SizedBox(height: 20),
-        if (_current == 4 || _current == 5)
+        if (q.targets != null && q.targets!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
             child: Text(
@@ -350,6 +350,152 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.black45),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          target,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        ...accepted.map((item) => Text(item.text)),
+                      ],
+                    ),
+                  );
+                },
+                onWillAccept: (_) => !_answered,
+                onAcceptWithDetails: (details) {
+                  final item = details.data;
+                  if (!_acceptedItems[target]!.contains(item)) {
+                    setState(() {
+                      _acceptedItems.forEach((_, list) => list.remove(item));
+                      _acceptedItems[target]!.add(item);
+                    });
+                  }
+                },
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+  */
+  Widget _buildArrastrar(Question q) {
+    if (_dragItems.isEmpty) _initDragItemsIfNeeded();
+
+    final textColor =
+        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (q.targets != null && q.targets!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Text(
+              'Opciones:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+          ),
+        Column(
+          children: _dragItems.map((item) {
+            final bool isAssigned = _acceptedItems.entries.any(
+              (e) => e.value.contains(item),
+            );
+
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              child: Draggable<DragItem>(
+                data: item,
+                feedback: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.amber.shade200,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.amber, width: 2),
+                    ),
+                    child: Text(
+                      item.text,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                childWhenDragging: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    item.text,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isAssigned
+                        ? Colors.green.shade200
+                        : Colors.amber.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.amber, width: 2),
+                  ),
+                  child: Text(
+                    isAssigned ? 'Seleccionado' : item.text,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 20),
+        if (q.targets != null && q.targets!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Text(
+              'Categorías:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+          ),
+        Column(
+          children: q.targets!.map((target) {
+            final accepted = _acceptedItems[target] ?? [];
+
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: DragTarget<DragItem>(
+                builder: (context, _, __) {
+                  return Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black45, width: 2),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
