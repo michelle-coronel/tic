@@ -162,33 +162,54 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
+  /*
   Widget _buildOptions(Question q) {
     final theme = Theme.of(context);
-    final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final baseTextColor =
+        theme.textTheme.bodyLarge?.color ??
+        (isDarkMode ? Colors.white : Colors.black);
 
     return Column(
       children: List.generate(q.options?.length ?? 0, (i) {
         final isSelected = i == _selectedIndex;
 
+        // Colores base para modo claro
         Color borderColor = Colors.grey.shade400;
         Color bgColor = theme.cardColor;
         Color circleColor = Colors.transparent;
-        Color optionTextColor = textColor;
+        Color optionTextColor = baseTextColor;
 
         if (_answered && isSelected) {
           if (_isCorrect) {
             circleColor = Colors.green;
             borderColor = Colors.green;
+            bgColor = isDarkMode
+                ? Colors.green.shade900
+                : Colors.green.shade100;
+            optionTextColor = isDarkMode
+                ? Colors.green.shade300
+                : Colors.green.shade900;
           } else {
-            bgColor = Colors.red.shade100;
+            bgColor = isDarkMode ? Colors.red.shade900 : Colors.red.shade100;
             circleColor = Colors.red;
             borderColor = Colors.red;
-            optionTextColor = Colors.red.shade900;
+            optionTextColor = isDarkMode
+                ? Colors.red.shade300
+                : Colors.red.shade900;
           }
         } else if (!_answered && isSelected) {
-          bgColor = Colors.amber.shade100;
+          bgColor = isDarkMode ? Colors.amber.shade700 : Colors.amber.shade100;
           circleColor = Colors.amber;
           borderColor = Colors.amber;
+          optionTextColor = isDarkMode ? Colors.black : Colors.black;
+        } else {
+          // Para opciones no seleccionadas, ajustar el color de texto y fondo según modo
+          bgColor = isDarkMode ? Colors.grey.shade800 : theme.cardColor;
+          optionTextColor = baseTextColor;
+          borderColor = isDarkMode
+              ? Colors.grey.shade600
+              : Colors.grey.shade400;
         }
 
         return GestureDetector(
@@ -211,7 +232,88 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     border: Border.all(
                       color: circleColor != Colors.transparent
                           ? circleColor
-                          : Colors.grey,
+                          : (isDarkMode ? Colors.white70 : Colors.grey),
+                      width: 2,
+                    ),
+                    color: circleColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    q.options![i],
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: optionTextColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }*/
+  Widget _buildOptions(Question q) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final baseTextColor =
+        theme.textTheme.bodyLarge?.color ??
+        (isDarkMode ? Colors.white : Colors.black);
+
+    return Column(
+      children: List.generate(q.options?.length ?? 0, (i) {
+        final isSelected = i == _selectedIndex;
+
+        Color borderColor = Colors.grey.shade400;
+        Color bgColor = theme.cardColor;
+        Color circleColor = Colors.transparent;
+        Color optionTextColor = baseTextColor;
+
+        if (_answered && isSelected) {
+          if (_isCorrect) {
+            // ✅ CORRECTA: solo borde y bolita verdes
+            borderColor = Colors.green;
+            circleColor = Colors.green;
+          } else {
+            // ❌ INCORRECTA: fondo rojo + rojo en borde y bolita
+            bgColor = isDarkMode ? Colors.red.shade900 : Colors.red.shade100;
+            borderColor = Colors.red;
+            circleColor = Colors.red;
+            optionTextColor = isDarkMode
+                ? Colors.red.shade300
+                : Colors.red.shade900;
+          }
+        } else if (!_answered && isSelected) {
+          // 🔘 Seleccionada (antes de comprobar): fondo ámbar
+          bgColor = isDarkMode ? Colors.amber.shade700 : Colors.amber.shade100;
+          borderColor = Colors.amber;
+          circleColor = Colors.amber;
+        }
+
+        return GestureDetector(
+          onTap: !_answered ? () => setState(() => _selectedIndex = i) : null,
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: borderColor, width: 2),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: circleColor != Colors.transparent
+                          ? circleColor
+                          : (isDarkMode ? Colors.white70 : Colors.grey),
                       width: 2,
                     ),
                     color: circleColor,
@@ -236,157 +338,12 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
-  /* Widget _buildArrastrar(Question q) {
-    if (_dragItems.isEmpty) _initDragItemsIfNeeded();
-
-    final textColor =
-        Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (q.targets != null && q.targets!.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              'Opciones:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-          ),
-        Column(
-          children: _dragItems.map((item) {
-            final bool isAssigned = _acceptedItems.entries.any(
-              (e) => e.value.contains(item),
-            );
-
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 6),
-              child: Draggable<DragItem>(
-                data: item,
-                feedback: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.amber.shade200,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.amber),
-                    ),
-                    child: Text(
-                      item.text,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                childWhenDragging: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    item.text,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: isAssigned
-                        ? Colors.green.shade200
-                        : Colors.amber.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.amber),
-                  ),
-                  child: Text(
-                    isAssigned ? 'Seleccionado' : item.text,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 20),
-        if (q.targets != null && q.targets!.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              'Categorías:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-          ),
-        Column(
-          children: q.targets!.map((target) {
-            final accepted = _acceptedItems[target] ?? [];
-
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              child: DragTarget<DragItem>(
-                builder: (context, _, __) {
-                  return Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.black45),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          target,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 4),
-                        ...accepted.map((item) => Text(item.text)),
-                      ],
-                    ),
-                  );
-                },
-                onWillAccept: (_) => !_answered,
-                onAcceptWithDetails: (details) {
-                  final item = details.data;
-                  if (!_acceptedItems[target]!.contains(item)) {
-                    setState(() {
-                      _acceptedItems.forEach((_, list) => list.remove(item));
-                      _acceptedItems[target]!.add(item);
-                    });
-                  }
-                },
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-  */
   Widget _buildArrastrar(Question q) {
     if (_dragItems.isEmpty) _initDragItemsIfNeeded();
 
     final textColor =
         Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,9 +375,9 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.amber.shade200,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.amber, width: 2),
+                      color: Colors.blue.shade300,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.blue, width: 2),
                     ),
                     child: Text(
                       item.text,
@@ -435,7 +392,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     item.text,
@@ -451,16 +408,28 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isAssigned
-                        ? Colors.green.shade200
-                        : Colors.amber.shade100,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.amber, width: 2),
+                        ? (isDarkMode
+                              ? Colors.green.shade700
+                              : Colors.green.shade200)
+                        : (isDarkMode
+                              ? Colors.blueGrey.shade700
+                              : const Color.fromARGB(255, 243, 234, 164)),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isDarkMode
+                          ? Colors.blueGrey.shade300
+                          : const Color.fromARGB(255, 240, 228, 5),
+                      width: 2,
+                    ),
                   ),
                   child: Text(
                     isAssigned ? 'Seleccionado' : item.text,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
+                      color: isDarkMode
+                          ? (isAssigned ? Colors.white : Colors.white70)
+                          : Colors.black87,
                     ),
                   ),
                 ),
@@ -493,24 +462,43 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
+                      color: isDarkMode
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.black45, width: 2),
+                      border: Border.all(
+                        color: isDarkMode
+                            ? Colors.grey.shade600
+                            : Colors.black45,
+                        width: 2,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           target,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: isDarkMode ? Colors.white : Colors.black,
+                          ),
                         ),
                         const SizedBox(height: 4),
-                        ...accepted.map((item) => Text(item.text)),
+                        ...accepted.map(
+                          (item) => Text(
+                            item.text,
+                            style: TextStyle(
+                              color: isDarkMode
+                                  ? Colors.white70
+                                  : Colors.black87,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   );
                 },
-                onWillAccept: (_) => !_answered,
+                onWillAcceptWithDetails: (details) => !_answered,
                 onAcceptWithDetails: (details) {
                   final item = details.data;
                   if (!_acceptedItems[target]!.contains(item)) {
@@ -642,7 +630,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: textColor.withOpacity(0.7),
+                        color: textColor.withAlpha((0.7 * 255).round()),
                       ),
                     ),
                   ),

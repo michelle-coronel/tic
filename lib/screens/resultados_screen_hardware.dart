@@ -44,7 +44,7 @@ class ResultadosScreenHardware extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withAlpha((0.05 * 255).round()),
                     blurRadius: 5,
                     offset: const Offset(0, 2),
                   ),
@@ -96,7 +96,7 @@ class ResultadosScreenHardware extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withAlpha((0.05 * 255).round()),
                       blurRadius: 5,
                       offset: const Offset(0, 2),
                     ),

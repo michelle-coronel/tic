@@ -119,6 +119,7 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget _buildOptions(Question q) {
     final theme = Theme.of(context);
     final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       children: List.generate(q.options?.length ?? 0, (i) {
@@ -129,39 +130,42 @@ class _QuizScreenState extends State<QuizScreen> {
         Color circleColor = Colors.transparent;
         Color optionTextColor = textColor;
 
-        if (_answered && isSelected) {
-          if (_isCorrect) {
-            bgColor = theme.cardColor;
-            circleColor = Colors.green;
-            borderColor = Colors.green;
-            optionTextColor = textColor;
-          } else {
-            bgColor = Colors.red.shade100;
-            circleColor = Colors.red;
-            borderColor = Colors.red;
-            optionTextColor = Colors.red.shade900;
+        if (_answered) {
+          if (isSelected) {
+            if (_isCorrect) {
+              // ✅ Correcta: solo borde y bolita verdes
+              borderColor = Colors.green;
+              circleColor = Colors.green;
+              optionTextColor = textColor;
+              // fondo no cambia
+            } else {
+              // ❌ Incorrecta: fondo rojo
+              bgColor = isDarkMode ? Colors.red.shade700 : Colors.red.shade100;
+              borderColor = Colors.red;
+              circleColor = Colors.red;
+              optionTextColor = isDarkMode ? Colors.white : Colors.red.shade900;
+            }
           }
-        } else if (!_answered && isSelected) {
-          bgColor = Colors.amber.shade100;
-          circleColor = Colors.amber;
-          borderColor = Colors.amber;
+        } else {
+          if (isSelected) {
+            // Antes de responder: seleccionado = fondo ámbar
+            bgColor = isDarkMode
+                ? Colors.amber.shade700
+                : Colors.amber.shade100;
+            borderColor = Colors.amber;
+            circleColor = Colors.amber;
+          }
         }
 
         return GestureDetector(
-          onTap: () {
-            if (!_answered) {
-              setState(() {
-                _selectedIndex = i;
-              });
-            }
-          },
+          onTap: !_answered ? () => setState(() => _selectedIndex = i) : null,
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: borderColor),
+              border: Border.all(color: borderColor, width: 2),
             ),
             child: Row(
               children: [
@@ -273,7 +277,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: textColor.withOpacity(0.7),
+                        color: textColor.withAlpha((0.7 * 255).round()),
                       ),
                     ),
                   ),

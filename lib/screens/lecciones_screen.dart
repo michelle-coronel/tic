@@ -49,7 +49,10 @@ class LeccionesScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               'Continúa los patrones',
-              style: TextStyle(fontSize: 20, color: textColor.withOpacity(0.6)),
+              style: TextStyle(
+                fontSize: 20,
+                color: textColor.withAlpha((0.6 * 255).round()),
+              ),
             ),
           ),
           const SizedBox(height: 16),
