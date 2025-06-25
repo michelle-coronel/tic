@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import '../models/categoria.dart';
 import '../models/question.dart';
 import 'resultados_screen_hardware.dart';
-import 'lecciones_screen.dart'; // Importa para navegar
+import 'lecciones_screen.dart';
+import 'resultados_screen_software.dart';
 
 class ResultadoScreen extends StatelessWidget {
   final int score;
   final int totalQuestions;
   final String tiempoTotal;
   final List<Question> questions;
+  final String tema;
+  final String appBarTitle;
 
   const ResultadoScreen({
     super.key,
@@ -16,6 +19,8 @@ class ResultadoScreen extends StatelessWidget {
     required this.totalQuestions,
     required this.tiempoTotal,
     required this.questions,
+    required this.tema,
+    required this.appBarTitle,
   });
 
   @override
@@ -25,7 +30,7 @@ class ResultadoScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Quiz Hardware'), centerTitle: true),
+      appBar: AppBar(title: Text(appBarTitle), centerTitle: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -68,7 +73,7 @@ class ResultadoScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   Text(
-                    'Hardware',
+                    tema,
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -77,7 +82,6 @@ class ResultadoScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -93,7 +97,6 @@ class ResultadoScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -133,17 +136,31 @@ class ResultadoScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ResultadosScreenHardware(
-                        score: score,
-                        totalQuestions: totalQuestions,
-                        tiempoTotal: tiempoTotal,
-                        questions: questions,
+                  if (tema == 'Hardware') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResultadosScreenHardware(
+                          score: score,
+                          totalQuestions: totalQuestions,
+                          tiempoTotal: tiempoTotal,
+                          questions: questions,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else if (tema == 'Software') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ResultadosScreenSoftware(
+                          score: score,
+                          totalQuestions: totalQuestions,
+                          tiempoTotal: tiempoTotal,
+                          questions: questions,
+                        ),
+                      ),
+                    );
+                  }
                 },
                 child: const Text(
                   'Ver resultados',
@@ -151,9 +168,10 @@ class ResultadoScreen extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 12),
 
-            // Botón: Siguiente tema
+            // Botón: Siguiente tema con AlertDialog
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -163,40 +181,90 @@ class ResultadoScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                 ),
                 onPressed: () {
-                  // Creamos la lista con Software activado al completar Hardware
-                  final categoriasActualizadas = [
-                    Categoria(
-                      nombre: 'Hardware',
-                      iconoPath: 'assets/icons/1_icon.png',
-                      activo: true,
-                    ),
-                    Categoria(
-                      nombre: 'Software',
-                      iconoPath: 'assets/icons/2_icon.png',
-                      activo: true, // Activamos Software
-                    ),
-                    Categoria(
-                      nombre: 'Sistemas Operativos',
-                      iconoPath: 'assets/icons/3_icon.png',
-                      activo: false,
-                    ),
-                    Categoria(
-                      nombre: 'Internet',
-                      iconoPath: 'assets/icons/4_icon.png',
-                      activo: false,
-                    ),
-                    Categoria(
-                      nombre: 'Actualizaciones de sistema',
-                      iconoPath: 'assets/icons/5_icon.png',
-                      activo: false,
-                    ),
-                  ];
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Tema completado'),
+                      content: Text(
+                        '¡Has completado el tema $tema con éxito!\n¿Deseas continuar con el siguiente tema?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Cancelar'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context); // Cierra el diálogo
 
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          LeccionesScreen(categorias: categoriasActualizadas),
+                            final categoriasActualizadas = tema == 'Hardware'
+                                ? [
+                                    Categoria(
+                                      nombre: 'Hardware',
+                                      iconoPath: 'assets/icons/1_icon.png',
+                                      activo: true,
+                                    ),
+                                    Categoria(
+                                      nombre: 'Software',
+                                      iconoPath: 'assets/icons/2_icon.png',
+                                      activo: true,
+                                    ),
+                                    Categoria(
+                                      nombre: 'Sistemas Operativos',
+                                      iconoPath: 'assets/icons/3_icon.png',
+                                      activo: false,
+                                    ),
+                                    Categoria(
+                                      nombre: 'Internet',
+                                      iconoPath: 'assets/icons/4_icon.png',
+                                      activo: false,
+                                    ),
+                                    Categoria(
+                                      nombre: 'Actualizaciones de sistema',
+                                      iconoPath: 'assets/icons/5_icon.png',
+                                      activo: false,
+                                    ),
+                                  ]
+                                : [
+                                    Categoria(
+                                      nombre: 'Hardware',
+                                      iconoPath: 'assets/icons/1_icon.png',
+                                      activo: true,
+                                    ),
+                                    Categoria(
+                                      nombre: 'Software',
+                                      iconoPath: 'assets/icons/2_icon.png',
+                                      activo: true,
+                                    ),
+                                    Categoria(
+                                      nombre: 'Sistemas Operativos',
+                                      iconoPath: 'assets/icons/3_icon.png',
+                                      activo: true,
+                                    ),
+                                    Categoria(
+                                      nombre: 'Internet',
+                                      iconoPath: 'assets/icons/4_icon.png',
+                                      activo: false,
+                                    ),
+                                    Categoria(
+                                      nombre: 'Actualizaciones de sistema',
+                                      iconoPath: 'assets/icons/5_icon.png',
+                                      activo: false,
+                                    ),
+                                  ];
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LeccionesScreen(
+                                  categorias: categoriasActualizadas,
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Text('Continuar'),
+                        ),
+                      ],
                     ),
                   );
                 },

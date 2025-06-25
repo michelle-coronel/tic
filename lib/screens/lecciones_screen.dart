@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/categoria.dart';
 import 'detalle_categoria_screen.dart';
+import 'detalle_software_screen.dart'; // Importa la pantalla específica de Software
 
 class LeccionesScreen extends StatelessWidget {
   final List<Categoria> categorias;
@@ -59,14 +60,41 @@ class LeccionesScreen extends StatelessWidget {
                 final categoria = categorias[index];
                 return ListTile(
                   onTap: () {
-                    if (categoria.activo) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DetalleCategoriaScreen(categoria: categoria),
+                    if (categoria.completado) {
+                      // Mostrar mensaje nivel completado
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('¡Felicidades!'),
+                          content: Text(
+                            'El nivel "${categoria.nombre}" ya está completado.',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Aceptar'),
+                            ),
+                          ],
                         ),
                       );
+                    } else if (categoria.activo) {
+                      if (categoria.nombre == 'Software') {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DetalleSoftwareScreen(categoria: categoria),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DetalleCategoriaScreen(categoria: categoria),
+                          ),
+                        );
+                      }
                     } else {
                       showDialog(
                         context: context,
@@ -95,16 +123,29 @@ class LeccionesScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 14),
                       Expanded(
-                        child: Text(
-                          categoria.nombre,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: categoria.activo
-                                ? colorActivo
-                                : colorInactivo,
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.none,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              categoria.nombre,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: categoria.activo
+                                    ? colorActivo
+                                    : colorInactivo,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (categoria.completado)
+                              const Text(
+                                '✔️ Completado',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ],

@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "type": "opcion_multiple",
+    "question": "¿Qué es el software?",
+    "options": [
+      "Los cables y conectores",
+      "Los dispositivos externos",
+      "Los programas que permiten realizar tareas"
+    ],
+    "answerIndex": 2,
+    "explanation": "El software es el conjunto de programas que hacen funcionar el hardware."
+  },
+  {
+    "id": 2,
+    "type": "opcion_multiple",
+    "question": "¿Cuál de los siguientes es un ejemplo de software de aplicación?",
+    "options": [
+      "CPU",
+      "Microsoft Excel",
+      "Windows"
+    ],
+    "answerIndex": 1,
+    "explanation": "Microsoft Excel es un ejemplo de software de aplicación"
+  },
+
+   {
+    "id": 3,
+    "type": "verdadero_falso",
+    "question": "¿Los juegos para computadora también son software?",
+    "options": ["Verdadero", "Falso"],
+    "answerIndex": 0,
+    "explanation": "Los juegos son programas, por lo tanto, forman parte del software."
+  },
+  {
+    "id": 4,
+    "type": "ordenar",
+    "question": "Ordena los pasos para escribir y guardar un documento:\n1. Escribir el contenido\n2. Abrir Microsoft Word\n3. Hacer clic en: Guardar como \n4. Elegir la carpeta y nombre del archivo",
+    "options": [
+      "1,2,3,4",
+      "2,1,3,4"
+    ],
+    "answerIndex": 1,
+    "explanation": "Has ordenado correctamente el proceso"
+  },
+  {
+    "id": 5,
+    "type": "arrastrar",
+    "question": "Arrastra cada tipo de software a su ejemplo correspondiente.",
+    "items": [
+      { "text": "Windows", "categoriaCorrecta": "Sistema Operativo" },
+      { "text": "Google Chrome", "categoriaCorrecta": "Aplicación" },
+      { "text": "Visual Studio Code", "categoriaCorrecta": "Programación" }
+    ],
+    "targets": ["Sistema Operativo", "Aplicación", "Programación"],
+    "explanation": "Cada software tiene una categoría según su propósito."
+  },
+  {
+  "id": 6,
+  "type": "arrastrar",
+  "question": "Clasifica los siguientes software según su uso en educación",
+  "items": [
+    { "text": "Zoom", "categoriaCorrecta": "Herramienta de Apoyo" },
+    { "text": "Duolingo", "categoriaCorrecta": "Herramienta de Enseñanza/Aprendizaje" },
+    { "text": "Google Forms", "categoriaCorrecta": "Herramienta de Evaluación" }
+     ],
+  "targets": ["Herramienta de Apoyo", "Herramienta de Evaluación", "Herramienta de Enseñanza/Aprendizaje"],
+  "explanation": "Los software se agrupan según su uso: plataformas como Duolingo se usan para enseñar o aprender; Zoom en la comunicación y Google Forms permite evaluar el conocimiento de forma interactiva."
+}
+
+]
+
