@@ -71,7 +71,7 @@ class LeccionesScreen extends StatelessWidget {
                 // Fondo dinámico según tema claro/oscuro
                 Color fondoColor = theme.brightness == Brightness.dark
                     ? Colors.grey[800]!
-                    : const Color.fromARGB(255, 251, 248, 248)!;
+                    : const Color.fromARGB(255, 251, 248, 248);
 
                 return ListTile(
                   onTap: () {
