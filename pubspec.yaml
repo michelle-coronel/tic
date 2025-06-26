@@ -1,34 +1,34 @@
-name: bitysoft
-description: "Una app educativa"
+name: bitysoft # Nombre del proyecto/app
+description: "Una app educativa" # Descripción corta del proyecto
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none' # Indica que este paquete no se publicará en pub.dev. 
 
-version: 1.0.0+1
+version: 1.0.0+1 # Versión de la app
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.8.1 # Versión mínima del SDK de Dart requerida (>=3.8.1)
 
 dependencies:
   flutter:
-    sdk: flutter
-  audioplayers: ^6.4.0
-  provider: ^6.1.1
-  shared_preferences: ^2.2.2
-  flutter_tts: ^3.6.1  
+    sdk: flutter  # Dependencia principal para Flutter
+  audioplayers: ^6.4.0  # Librería para reproducir sonidos y audios
+  provider: ^6.1.1 # Librería para manejo de estado en Flutter
+  shared_preferences: ^2.2.2  # Para guardar datos simples localmente en el dispositivo
+  flutter_tts: ^3.6.1   # Text To Speech: para síntesis de voz en la app
 
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.8   # Iconos estilo iOS para la app (no obligatorios)
 
 dev_dependencies:
   flutter_test:
-    sdk: flutter
-  flutter_lints: ^5.0.0
-  flutter_launcher_icons: ^0.14.4
+    sdk: flutter  # Herramientas para pruebas unitarias y widget testing
+  flutter_lints: ^5.0.0   # Reglas y recomendaciones para escribir código limpio
+  flutter_launcher_icons: ^0.14.4  # Paquete para crear y configurar los íconos de la app automáticamente
 
 
 flutter:
-  uses-material-design: true
+  uses-material-design: true   # Indica que la app usará Material Design (widgets, íconos, etc)
 
-  assets:
+  assets:  # Lista de archivos y carpetas que se incluyen en el proyecto para ser usados (imágenes, sonidos, datos JSON, íconos, etc)
       - assets/images/logo.jpg
       - assets/images/inicio.jpg
       - assets/images/inicio1.png
@@ -43,3 +43,4 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/images/app_icon.png"
+  # Configuración para generar los íconos de la app para Android e iOS a partir de esta imagen

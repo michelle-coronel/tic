@@ -1,9 +1,10 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
-import '../models/question.dart';
-import 'resultado_screen.dart';
+import 'dart:convert'; // Para decodificar JSON
+import 'package:flutter/material.dart'; // Widgets de Flutter
+import 'package:audioplayers/audioplayers.dart'; // Para reproducir sonidos
+import '../models/question.dart'; // Modelo de preguntas
+import 'resultado_screen.dart'; // Pantalla para mostrar resultados
 
+// Widget principal del quiz de software
 class QuizSoftwareScreen extends StatefulWidget {
   const QuizSoftwareScreen({super.key});
 
@@ -12,56 +13,68 @@ class QuizSoftwareScreen extends StatefulWidget {
 }
 
 class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
-  late Future<List<Question>> _futureQuestions;
-  late List<Question> _questions;
-  int _current = 0;
-  int _score = 0;
+  late Future<List<Question>>
+  _futureQuestions; // Futuro para cargar las preguntas
+  late List<Question> _questions; // Lista con las preguntas cargadas
+  int _current = 0; // Índice de la pregunta actual
+  int _score = 0; // Puntaje acumulado
 
-  int? _selectedIndex;
-  bool _answered = false;
-  bool _isCorrect = false;
-  String _textAnswer = '';
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  int?
+  _selectedIndex; // Índice de opción seleccionada para preguntas de opción múltiple
+  bool _answered = false; // Si la pregunta ya fue respondida
+  bool _isCorrect = false; // Si la respuesta fue correcta
+  String _textAnswer = ''; // Respuesta escrita para preguntas tipo completar
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Reproductor de sonidos
 
-  late DateTime _startTime;
+  late DateTime _startTime; // Tiempo cuando inicia el quiz
 
-  List<DragItem> _dragItems = [];
-  Map<String, List<DragItem>> _acceptedItems = {};
+  List<DragItem> _dragItems = []; // Items para preguntas tipo arrastrar
+  Map<String, List<DragItem>> _acceptedItems =
+      {}; // Items aceptados en cada categoría (target)
 
   @override
   void initState() {
     super.initState();
-    _futureQuestions = _loadQuestions();
-    _startTime = DateTime.now();
+    _futureQuestions = _loadQuestions(); // Carga las preguntas al iniciar
+    _startTime = DateTime.now(); // Registra la hora de inicio
   }
 
+  // Función para cargar las preguntas desde un archivo JSON local
   Future<List<Question>> _loadQuestions() async {
     final jsonString = await DefaultAssetBundle.of(
       context,
-    ).loadString('assets/images/software_questions.json');
-    final List<dynamic> jsonData = json.decode(jsonString);
-    return jsonData.map((e) => Question.fromJson(e)).toList();
+    ).loadString('assets/images/software_questions.json'); // Lee JSON
+    final List<dynamic> jsonData = json.decode(jsonString); // Decodifica JSON
+    return jsonData
+        .map((e) => Question.fromJson(e))
+        .toList(); // Convierte a lista de Question
   }
 
+  // Reproduce sonido dependiendo si la respuesta es correcta o incorrecta
   Future<void> _playSound(bool isCorrect) async {
     final file = isCorrect ? 'sounds/correcto.mp3' : 'sounds/incorrecto.mp3';
     await _audioPlayer.play(AssetSource(file));
   }
 
+  // Método para verificar si la respuesta dada es correcta
   void _checkAnswer() {
     final q = _questions[_current];
 
     if (q.type == 'completar') {
+      // Para preguntas tipo completar, compara texto ingresado con respuesta correcta (sin distinguir mayúsculas/minúsculas)
       final correct =
           q.answerText?.trim().toLowerCase() ==
           _textAnswer.trim().toLowerCase();
+
       setState(() {
-        _answered = true;
-        _isCorrect = correct;
-        if (_isCorrect) _score++;
+        _answered = true; // Marca que se respondió
+        _isCorrect = correct; // Marca si es correcta o no
+        if (_isCorrect) _score++; // Incrementa puntaje si es correcta
       });
-      _playSound(_isCorrect);
+
+      _playSound(_isCorrect); // Reproduce sonido correspondiente
     } else if (q.type == 'arrastrar') {
+      // Para preguntas tipo arrastrar, verifica que todos los items estén en la categoría correcta
       bool allCorrect = true;
       for (var item in _dragItems) {
         bool found = false;
@@ -71,25 +84,32 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
             found = true;
           }
         });
-        if (!found) allCorrect = false;
+        if (!found)
+          allCorrect = false; // Si algún item no está asignado, es incorrecto
       }
+
       setState(() {
         _answered = true;
         _isCorrect = allCorrect;
         if (_isCorrect) _score++;
       });
+
       _playSound(_isCorrect);
     } else {
-      if (_selectedIndex == null) return;
+      // Para preguntas de opción múltiple
+      if (_selectedIndex == null) return; // Si no hay selección, no hace nada
       setState(() {
         _answered = true;
-        _isCorrect = _selectedIndex == q.answerIndex;
+        _isCorrect =
+            _selectedIndex ==
+            q.answerIndex; // Compara índice seleccionado con respuesta correcta
         if (_isCorrect) _score++;
       });
       _playSound(_isCorrect);
     }
   }
 
+  // Avanza a la siguiente pregunta o muestra resultados si se terminó el quiz
   void _nextQuestion() {
     setState(() {
       _answered = false;
@@ -98,27 +118,29 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
       _isCorrect = false;
       if (_current < _questions.length - 1) {
         _current++;
-        _initDragItemsIfNeeded();
+        _initDragItemsIfNeeded(); // Inicializa los items para la siguiente pregunta si es tipo arrastrar
       } else {
-        _showResult();
+        _showResult(); // Muestra pantalla de resultados al terminar
       }
     });
   }
 
+  // Permite reintentar la pregunta actual (resetea estado)
   void _retryQuestion() {
     setState(() {
       _answered = false;
       _selectedIndex = null;
       _textAnswer = '';
       if (_questions[_current].type == 'arrastrar') {
-        _initDragItemsIfNeeded();
+        _initDragItemsIfNeeded(); // Reinicia los items si es pregunta arrastrar
       }
     });
   }
 
+  // Navega a la pantalla de resultados con datos del quiz
   void _showResult() {
     final endTime = DateTime.now();
-    final duration = endTime.difference(_startTime);
+    final duration = endTime.difference(_startTime); // Calcula duración total
     final tiempoFormateado =
         '${duration.inMinutes}m ${duration.inSeconds % 60}s';
 
@@ -137,6 +159,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
+  // Inicializa los items para preguntas tipo arrastrar, asignando listas vacías a cada target
   void _initDragItemsIfNeeded() {
     final q = _questions[_current];
     if (q.type == 'arrastrar' && q.items != null) {
@@ -148,12 +171,14 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     }
   }
 
+  // Construye widget para preguntas tipo completar (input de texto)
   Widget _buildCompletar(Question q) {
     final textColor =
         Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
     return TextField(
-      enabled: !_answered,
-      onChanged: (value) => setState(() => _textAnswer = value),
+      enabled: !_answered, // Solo editable si no se respondió aún
+      onChanged: (value) =>
+          setState(() => _textAnswer = value), // Actualiza texto ingresado
       decoration: const InputDecoration(
         labelText: 'Escribe la respuesta',
         border: OutlineInputBorder(),
@@ -162,6 +187,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
+  // Construye opciones para preguntas de opción múltiple
   Widget _buildOptions(Question q) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
@@ -178,13 +204,14 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
         Color circleColor = Colors.transparent;
         Color optionTextColor = baseTextColor;
 
+        // Cambios visuales según estado de la respuesta y selección
         if (_answered && isSelected) {
           if (_isCorrect) {
-            // ✅ CORRECTA: solo borde y bolita verdes
+            // Correcta: borde y círculo verde
             borderColor = Colors.green;
             circleColor = Colors.green;
           } else {
-            // ❌ INCORRECTA: fondo rojo + rojo en borde y bolita
+            // Incorrecta: fondo y borde rojos, texto más claro
             bgColor = isDarkMode ? Colors.red.shade900 : Colors.red.shade100;
             borderColor = Colors.red;
             circleColor = Colors.red;
@@ -193,14 +220,16 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                 : Colors.red.shade900;
           }
         } else if (!_answered && isSelected) {
-          // 🔘 Seleccionada (antes de comprobar): fondo ámbar
+          // Seleccionada antes de comprobar: fondo y borde ámbar
           bgColor = isDarkMode ? Colors.amber.shade700 : Colors.amber.shade100;
           borderColor = Colors.amber;
           circleColor = Colors.amber;
         }
 
         return GestureDetector(
-          onTap: !_answered ? () => setState(() => _selectedIndex = i) : null,
+          onTap: !_answered
+              ? () => setState(() => _selectedIndex = i)
+              : null, // Selección solo si no ha respondido
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 8),
             padding: const EdgeInsets.all(12),
@@ -244,6 +273,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
+  // Construye widget para preguntas tipo arrastrar y soltar
   Widget _buildArrastrar(Question q) {
     if (_dragItems.isEmpty) _initDragItemsIfNeeded();
 
@@ -254,6 +284,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Título Opciones
         if (q.targets != null && q.targets!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
@@ -266,6 +297,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
               ),
             ),
           ),
+        // Lista de elementos draggeables
         Column(
           children: _dragItems.map((item) {
             final bool isAssigned = _acceptedItems.entries.any(
@@ -294,6 +326,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     ),
                   ),
                 ),
+                // Cómo se ve el item mientras se arrastra
                 childWhenDragging: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -309,6 +342,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     ),
                   ),
                 ),
+                // Cómo se ve el item normalmente
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
@@ -344,6 +378,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
           }).toList(),
         ),
         const SizedBox(height: 20),
+        // Título Categorías (targets)
         if (q.targets != null && q.targets!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 8.0),
@@ -356,6 +391,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
               ),
             ),
           ),
+        // Lista de targets donde se sueltan los items
         Column(
           children: q.targets!.map((target) {
             final accepted = _acceptedItems[target] ?? [];
@@ -390,6 +426,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                           ),
                         ),
                         const SizedBox(height: 4),
+                        // Muestra los items aceptados dentro del target
                         ...accepted.map(
                           (item) => Text(
                             item.text,
@@ -404,12 +441,15 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     ),
                   );
                 },
-                onWillAcceptWithDetails: (details) => !_answered,
+                onWillAcceptWithDetails: (details) =>
+                    !_answered, // Solo acepta si no se ha respondido aún
                 onAcceptWithDetails: (details) {
                   final item = details.data;
                   if (!_acceptedItems[target]!.contains(item)) {
                     setState(() {
+                      // Elimina item de cualquier categoría para moverlo solo a una
                       _acceptedItems.forEach((_, list) => list.remove(item));
+                      // Lo agrega a la categoría actual
                       _acceptedItems[target]!.add(item);
                     });
                   }
@@ -422,6 +462,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
+  // Construye contenedor de feedback (correcto o incorrecto) con mensaje y explicación
   Widget _buildFeedbackContainer({
     required bool correct,
     String? explanation,
@@ -474,6 +515,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
+  // Construye la interfaz principal del quiz
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -483,14 +525,17 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
       future: _futureQuestions,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
+          // Mientras carga muestra indicador
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         } else if (snapshot.hasError) {
+          // Muestra error si falla carga
           return Scaffold(
             body: Center(child: Text('Error: ${snapshot.error}')),
           );
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          // Si no hay datos muestra mensaje
           return const Scaffold(
             body: Center(child: Text('No hay preguntas disponibles')),
           );
@@ -499,6 +544,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
         _questions = snapshot.data!;
         final q = _questions[_current];
 
+        // Inicializa drag items después del build si es pregunta arrastrar y no están inicializados
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (q.type == 'arrastrar' && _dragItems.isEmpty) {
             _initDragItemsIfNeeded();
@@ -522,6 +568,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Barra de progreso
                   LinearProgressIndicator(
                     value: (_current + 1) / _questions.length,
                     backgroundColor: Colors.grey[400],
@@ -529,6 +576,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     minHeight: 18,
                   ),
                   const SizedBox(height: 20),
+                  // Texto porcentaje completado
                   Align(
                     alignment: Alignment.centerRight,
                     child: Text(
@@ -541,6 +589,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     ),
                   ),
                   const SizedBox(height: 40),
+                  // Texto pregunta
                   Text(
                     q.question,
                     style: TextStyle(
@@ -550,6 +599,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
+                  // Widget para la pregunta según tipo
                   if (q.type == 'completar')
                     _buildCompletar(q)
                   else if (q.type == 'arrastrar')
@@ -559,6 +609,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
 
                   const SizedBox(height: 40),
                   if (!_answered)
+                    // Botón comprobar solo si no se ha respondido
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -591,6 +642,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                       ),
                     )
                   else ...[
+                    // Feedback de la respuesta (correcto o incorrecto)
                     const SizedBox(height: 16),
                     _buildFeedbackContainer(
                       correct: _isCorrect,
@@ -598,6 +650,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                       explanation: _isCorrect ? q.explanation : null,
                     ),
                     const SizedBox(height: 16),
+                    // Botón para continuar o reintentar
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(

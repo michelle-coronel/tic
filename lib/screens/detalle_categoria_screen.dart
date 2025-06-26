@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-import 'quiz_screen.dart';
-import '../models/categoria.dart';
+import 'quiz_screen.dart'; // Pantalla del quiz
+import '../models/categoria.dart'; // Modelo Categoria
 
+// Pantalla que muestra el detalle de una categoría (por ejemplo Hardware)
 class DetalleCategoriaScreen extends StatefulWidget {
-  final Categoria categoria;
+  final Categoria categoria; // Categoría que se mostrará
 
   const DetalleCategoriaScreen({super.key, required this.categoria});
 
@@ -14,8 +15,9 @@ class DetalleCategoriaScreen extends StatefulWidget {
 }
 
 class _DetalleCategoriaScreenState extends State<DetalleCategoriaScreen> {
-  final FlutterTts flutterTts = FlutterTts();
+  final FlutterTts flutterTts = FlutterTts(); // Instancia del Text-to-Speech
 
+  // Texto que será leído por la síntesis de voz
   final String textoALeer = '''
 El hardware es todo lo que puedes tocar en una computadora o dispositivo. Son las partes físicas como el teclado, la pantalla, el ratón, etc.
 
@@ -31,16 +33,20 @@ Ejemplos de hardware comunes:
 8. Micrófono: Permite grabar o hablar en videollamadas
 ''';
 
+  // Estado para controlar si se está hablando o pausado
   bool isSpeaking = false;
   bool isPaused = false;
 
   @override
   void initState() {
     super.initState();
+
+    // Configuraciones iniciales del TTS: idioma, tono y velocidad
     flutterTts.setLanguage('es-ES');
     flutterTts.setPitch(1.0);
     flutterTts.setSpeechRate(0.5);
 
+    // Manejadores de eventos para actualizar el estado según TTS
     flutterTts.setStartHandler(() {
       setState(() {
         isSpeaking = true;
@@ -79,10 +85,12 @@ Ejemplos de hardware comunes:
 
   @override
   void dispose() {
+    // Detiene el TTS al destruir el widget
     flutterTts.stop();
     super.dispose();
   }
 
+  // Métodos para controlar la reproducción de voz
   Future<void> _speak() async {
     await flutterTts.speak(textoALeer);
   }
@@ -92,6 +100,7 @@ Ejemplos de hardware comunes:
   }
 
   Future<void> _continue() async {
+    // En flutter_tts, resume no siempre está soportado, por eso se llama speak otra vez
     await flutterTts.speak(textoALeer);
   }
 
@@ -99,12 +108,14 @@ Ejemplos de hardware comunes:
     await flutterTts.stop();
   }
 
+  // Texto dinámico del botón según estado (Escuchar, Pausar, Reanudar)
   String get estadoTexto {
     if (isSpeaking) return 'Pausar';
     if (isPaused) return 'Reanudar';
     return 'Escuchar';
   }
 
+  // Icono dinámico del botón según estado
   IconData get estadoIcono {
     if (isSpeaking) return Icons.pause;
     if (isPaused) return Icons.play_arrow;
@@ -116,7 +127,9 @@ Ejemplos de hardware comunes:
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.categoria.nombre,
+          widget
+              .categoria
+              .nombre, // Muestra el nombre de la categoría en el AppBar
           style:
               Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -127,21 +140,21 @@ Ejemplos de hardware comunes:
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Botones Escuchar y Restablecer alineados a la derecha, arriba
+          // Fila con botones de control de TTS (Escuchar/Pausar/Reanudar) y Restablecer
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Botón Escuchar/Pausar/Reanudar
+                // Botón principal para controlar TTS
                 InkWell(
                   onTap: () {
                     if (isSpeaking) {
-                      _pause();
+                      _pause(); // Pausa si está hablando
                     } else if (isPaused) {
-                      _continue();
+                      _continue(); // Reanuda si está pausado
                     } else {
-                      _speak();
+                      _speak(); // Comienza a hablar si está detenido
                     }
                   },
                   borderRadius: BorderRadius.circular(12),
@@ -187,7 +200,7 @@ Ejemplos de hardware comunes:
                   ),
                 ),
 
-                // Botón Restablecer (refresh)
+                // Botón para detener/restablecer la lectura
                 InkWell(
                   onTap: _stop,
                   borderRadius: BorderRadius.circular(12),
@@ -216,7 +229,7 @@ Ejemplos de hardware comunes:
             ),
           ),
 
-          // Contenedor con borde gris desde el título hasta el contenido explicativo
+          // Contenedor principal con borde que contiene el texto explicativo e imagen
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -227,7 +240,7 @@ Ejemplos de hardware comunes:
                   borderRadius: BorderRadius.circular(12),
                   color: Theme.of(
                     context,
-                  ).cardColor, // fondo adaptativo claro/oscuro
+                  ).cardColor, // Color adaptativo (claro/oscuro)
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +260,7 @@ Ejemplos de hardware comunes:
 
                     const SizedBox(height: 16),
 
-                    // Imagen
+                    // Imagen ilustrativa
                     Center(
                       child: Image.asset(
                         'assets/images/hardware.jpeg',
@@ -257,7 +270,7 @@ Ejemplos de hardware comunes:
 
                     const SizedBox(height: 16),
 
-                    // Texto explicativo
+                    // Texto explicativo introductorio
                     const Text(
                       'El hardware es todo lo que puedes tocar en una computadora o dispositivo. '
                       'Son las partes físicas como el teclado, la pantalla, el ratón, etc.\n',
@@ -265,6 +278,7 @@ Ejemplos de hardware comunes:
                       textAlign: TextAlign.justify,
                     ),
 
+                    // Subtítulo "Ejemplos de hardware comunes"
                     Text(
                       'Ejemplos de hardware comunes:\n',
                       style: TextStyle(
@@ -276,6 +290,7 @@ Ejemplos de hardware comunes:
 
                     const SizedBox(height: 8),
 
+                    // Lista detallada de ejemplos con negritas en los nombres
                     RichText(
                       text: TextSpan(
                         style: TextStyle(
@@ -346,12 +361,13 @@ Ejemplos de hardware comunes:
             ),
           ),
 
-          // Botón Iniciar Quiz abajo
+          // Botón para iniciar el quiz, ubicado abajo
           Container(
             padding: const EdgeInsets.all(16),
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
+                // Navega a la pantalla del quiz al pulsar
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const QuizScreen()),
