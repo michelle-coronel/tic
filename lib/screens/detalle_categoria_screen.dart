@@ -216,120 +216,132 @@ Ejemplos de hardware comunes:
             ),
           ),
 
-          // Texto "¿Qué es el hardware?" centrado y con tamaño aumentado
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Center(
-              child: Text(
-                '¿Qué es el hardware?',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Imagen centrada
-          Center(child: Image.asset('assets/images/hardware.jpeg', width: 300)),
-
-          const SizedBox(height: 16),
-
-          // Texto explicativo con scroll
+          // Contenedor con borde gris desde el título hasta el contenido explicativo
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Definición justificada
-                  const Text(
-                    'El hardware es todo lo que puedes tocar en una computadora o dispositivo. '
-                    'Son las partes físicas como el teclado, la pantalla, el ratón, etc.\n',
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.justify,
-                  ),
-
-                  // Texto "Ejemplos de hardware comunes:" en negrita
-                  Text(
-                    'Ejemplos de hardware comunes:\n',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 13, 116, 200),
-                      // color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // RichText con lista
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).textTheme.bodyLarge?.color,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(
+                    context,
+                  ).cardColor, // fondo adaptativo claro/oscuro
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Título centrado
+                    Center(
+                      child: Text(
+                        '¿Qué es el hardware?',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                        textAlign: TextAlign.center,
                       ),
-                      children: const [
-                        TextSpan(
-                          text: '1. Monitor:\n\n',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: 'Muestra información en pantalla (salida)\n\n',
-                        ),
-                        TextSpan(
-                          text: '2. Teclado:\n\n',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text:
-                              'Permite al usuario ingresar datos, texto, comandos y funciones\n\n',
-                        ),
-                        TextSpan(
-                          text: '3. Ratón:\n\n',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: 'Se usa para mover el cursor y hacer clic\n\n',
-                        ),
-                        TextSpan(
-                          text: '4. CPU o torre:\n\n',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text:
-                              'Es el cerebro del computador, es decir, donde se procesan los datos (proceso)\n\n',
-                        ),
-                        TextSpan(
-                          text: '5. Impresora:\n\n',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(text: 'Saca los documentos en papel\n\n'),
-                        TextSpan(
-                          text: '6. Altavoces:\n\n',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(text: 'Reproducen sonido\n\n'),
-                        TextSpan(
-                          text: '7. Cámara web:\n\n',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(text: 'Sirve para hacer videollamadas\n\n'),
-                        TextSpan(
-                          text: '8. Micrófono:\n\n',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: 'Permite grabar o hablar en videollamadas\n',
-                        ),
-                      ],
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 16),
+
+                    // Imagen
+                    Center(
+                      child: Image.asset(
+                        'assets/images/hardware.jpeg',
+                        width: 300,
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Texto explicativo
+                    const Text(
+                      'El hardware es todo lo que puedes tocar en una computadora o dispositivo. '
+                      'Son las partes físicas como el teclado, la pantalla, el ratón, etc.\n',
+                      style: TextStyle(fontSize: 16),
+                      textAlign: TextAlign.justify,
+                    ),
+
+                    Text(
+                      'Ejemplos de hardware comunes:\n',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 13, 116, 200),
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
+                        children: const [
+                          TextSpan(
+                            text: '1. Monitor:\n\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text:
+                                'Muestra información en pantalla (salida)\n\n',
+                          ),
+                          TextSpan(
+                            text: '2. Teclado:\n\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text:
+                                'Permite al usuario ingresar datos, texto, comandos y funciones\n\n',
+                          ),
+                          TextSpan(
+                            text: '3. Ratón:\n\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text:
+                                'Se usa para mover el cursor y hacer clic\n\n',
+                          ),
+                          TextSpan(
+                            text: '4. CPU o torre:\n\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text:
+                                'Es el cerebro del computador, es decir, donde se procesan los datos (proceso)\n\n',
+                          ),
+                          TextSpan(
+                            text: '5. Impresora:\n\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(text: 'Saca los documentos en papel\n\n'),
+                          TextSpan(
+                            text: '6. Altavoces:\n\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(text: 'Reproducen sonido\n\n'),
+                          TextSpan(
+                            text: '7. Cámara web:\n\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(text: 'Sirve para hacer videollamadas\n\n'),
+                          TextSpan(
+                            text: '8. Micrófono:\n\n',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
+                            text: 'Permite grabar o hablar en videollamadas\n',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

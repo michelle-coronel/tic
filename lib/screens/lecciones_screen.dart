@@ -61,10 +61,21 @@ class LeccionesScreen extends StatelessWidget {
               itemCount: categorias.length,
               itemBuilder: (context, index) {
                 final categoria = categorias[index];
+
+                final bool esActivo = categoria.activo;
+                final bool estaCompletado = categoria.completado;
+
+                Color iconColor = esActivo ? colorActivo : colorInactivo;
+                Color bordeColor = estaCompletado ? Colors.green : iconColor;
+
+                // Fondo dinámico según tema claro/oscuro
+                Color fondoColor = theme.brightness == Brightness.dark
+                    ? Colors.grey[800]!
+                    : const Color.fromARGB(255, 251, 248, 248)!;
+
                 return ListTile(
                   onTap: () {
                     if (categoria.completado) {
-                      // Mostrar mensaje nivel completado
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -90,7 +101,6 @@ class LeccionesScreen extends StatelessWidget {
                           ),
                         );
                       } else if (categoria.nombre == 'Sistemas Operativos') {
-                        // Mostrar mensaje personalizado para Sistemas Operativos
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
@@ -133,11 +143,20 @@ class LeccionesScreen extends StatelessWidget {
                   },
                   title: Row(
                     children: [
-                      Image.asset(
-                        categoria.iconoPath,
+                      // Cuadro con fondo gris dinámico y borde
+                      Container(
                         width: 85,
                         height: 85,
-                        color: categoria.activo ? colorActivo : colorInactivo,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: fondoColor,
+                          border: Border.all(color: bordeColor, width: 2),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Image.asset(
+                          categoria.iconoPath,
+                          color: iconColor,
+                        ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -148,9 +167,7 @@ class LeccionesScreen extends StatelessWidget {
                               categoria.nombre,
                               style: TextStyle(
                                 fontSize: 18,
-                                color: categoria.activo
-                                    ? colorActivo
-                                    : colorInactivo,
+                                color: iconColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
