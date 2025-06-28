@@ -462,6 +462,91 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
     );
   }
 
+  // Alternativa accesible para preguntas tipo arrastrar (TalkBack)
+  Widget _buildArrastrarAccesible(Question q) {
+    if (q.items == null || q.targets == null) return const SizedBox();
+
+    // Inicializa mapas si están vacíos
+    if (_acceptedItems.isEmpty) {
+      _acceptedItems = {for (var t in q.targets!) t: []};
+    }
+
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      children: q.items!.map((item) {
+        final currentTarget = _acceptedItems.entries
+            .firstWhere(
+              (entry) => entry.value.contains(item),
+              orElse: () => MapEntry('', []),
+            )
+            .key;
+
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDarkMode ? Colors.blueGrey.shade700 : Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDarkMode
+                  ? Colors.blueGrey.shade300
+                  : const Color.fromARGB(255, 200, 200, 200),
+              width: 2,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.text,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  value: currentTarget.isEmpty ? null : currentTarget,
+                  decoration: const InputDecoration(
+                    labelText: 'Selecciona una categoría',
+                    border: OutlineInputBorder(),
+                  ),
+                  dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                  onChanged: _answered
+                      ? null
+                      : (String? newTarget) {
+                          if (newTarget == null) return;
+                          setState(() {
+                            // Quita de todas las categorías
+                            _acceptedItems.forEach(
+                              (_, list) => list.remove(item),
+                            );
+                            // Agrega a la nueva
+                            _acceptedItems[newTarget]!.add(item);
+                          });
+                        },
+                  items: q.targets!
+                      .map(
+                        (target) => DropdownMenuItem(
+                          value: target,
+                          child: Text(target, overflow: TextOverflow.ellipsis),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   // Construye contenedor de feedback (correcto o incorrecto) con mensaje y explicación
   Widget _buildFeedbackContainer({
     required bool correct,
@@ -603,7 +688,9 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                   if (q.type == 'completar')
                     _buildCompletar(q)
                   else if (q.type == 'arrastrar')
-                    _buildArrastrar(q)
+                    MediaQuery.of(context).accessibleNavigation
+                        ? _buildArrastrarAccesible(q)
+                        : _buildArrastrar(q)
                   else
                     _buildOptions(q),
 
