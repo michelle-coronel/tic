@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart'; // Importa los widgets de Flutter para la interfaz
+import 'package:flutter/material.dart'; // Importa los widgets básicos para construir la interfaz
 import 'package:flutter_tts/flutter_tts.dart'; // Importa la librería para síntesis de voz (Text-to-Speech)
 
 import 'quiz_screen.dart'; // Importa la pantalla del quiz
-import '../models/categoria.dart'; // Importa el modelo Categoria
+import '../models/categoria.dart'; // Importa el modelo Categoria para manejar la información de categorías
 
 // Widget Stateful que muestra el detalle de una categoría específica (ej. Hardware)
 class DetalleCategoriaScreen extends StatefulWidget {
   final Categoria categoria; // Categoría que será mostrada en esta pantalla
 
+  // Constructor que recibe la categoría requerida
   const DetalleCategoriaScreen({super.key, required this.categoria});
 
   @override
@@ -16,8 +17,8 @@ class DetalleCategoriaScreen extends StatefulWidget {
 
 // Estado asociado al widget DetalleCategoriaScreen
 class _DetalleCategoriaScreenState extends State<DetalleCategoriaScreen> {
-  final FlutterTts flutterTts =
-      FlutterTts(); // Instancia de la clase FlutterTts para síntesis de voz
+  // Instancia para controlar la síntesis de voz
+  final FlutterTts flutterTts = FlutterTts();
 
   // Texto que será leído por la síntesis de voz
   final String textoALeer = '''
@@ -42,7 +43,7 @@ Ejemplos de hardware comunes:
   void initState() {
     super.initState();
 
-    // Configura idioma, tono y velocidad del TTS
+    // Configura idioma, tono y velocidad del TTS al iniciar el widget
     flutterTts.setLanguage('es-ES');
     flutterTts.setPitch(1.0);
     flutterTts.setSpeechRate(0.5);
@@ -107,7 +108,7 @@ Ejemplos de hardware comunes:
 
   // Método para continuar la lectura (reanudar)
   Future<void> _continue() async {
-    // flutter_tts no siempre soporta resume, por eso se llama speak de nuevo
+    // flutter_tts no siempre soporta reanudar, por eso se llama speak de nuevo
     await flutterTts.speak(textoALeer);
   }
 
@@ -133,7 +134,7 @@ Ejemplos de hardware comunes:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Barra superior con el nombre de la categoría
+      // Barra superior con el nombre de la categoría dinámica
       appBar: AppBar(
         title: Text(
           widget.categoria.nombre,
@@ -145,20 +146,20 @@ Ejemplos de hardware comunes:
         ),
       ),
 
-      // Cuerpo principal en columna vertical
+      // Cuerpo principal con una columna vertical
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Fila con botones para controlar la síntesis de voz
+          // Fila con botones para controlar la síntesis de voz (leer, pausar, detener)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Botón principal para controlar la lectura (Escuchar, Pausar, Reanudar)
+                // Botón principal para controlar la lectura
                 Semantics(
                   label:
-                      '$estadoTexto el texto con voz', // Etiqueta accesible sin repetir "botón"
+                      '$estadoTexto el texto con voz', // Etiqueta para lectores de pantalla
                   button: true,
                   child: InkWell(
                     onTap: () {
@@ -221,15 +222,14 @@ Ejemplos de hardware comunes:
                 // Botón para detener la lectura por completo
                 Semantics(
                   label:
-                      'Detener lectura de voz', // Descripción clara sin repetir "botón"
+                      'Detener lectura de voz', // Etiqueta para lectores de pantalla
                   button: true,
                   child: InkWell(
                     onTap: _stop,
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
                       constraints: const BoxConstraints(
-                        minWidth:
-                            60, // Tamaño mínimo táctil mayor para botón de detener
+                        minWidth: 60,
                         minHeight: 60,
                       ),
                       margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -246,8 +246,7 @@ Ejemplos de hardware comunes:
                         ],
                       ),
                       child: const Icon(
-                        Icons
-                            .refresh, // Icono que representa la acción de detener/reiniciar
+                        Icons.refresh, // Icono para reiniciar/detener
                         color: Colors.white,
                         size: 32,
                       ),
@@ -258,7 +257,7 @@ Ejemplos de hardware comunes:
             ),
           ),
 
-          // Contenedor con scroll para mostrar el texto e imagen de forma cómoda
+          // Área expandible con scroll para mostrar contenido largo (texto + imagen)
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -269,14 +268,12 @@ Ejemplos de hardware comunes:
                     color: Colors.grey,
                   ), // Borde gris alrededor
                   borderRadius: BorderRadius.circular(12),
-                  color: Theme.of(
-                    context,
-                  ).cardColor, // Color adaptativo según tema
+                  color: Theme.of(context).cardColor, // Color adaptable al tema
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título centrado en negrita
+                    // Título centrado y en negrita
                     Center(
                       child: Text(
                         '¿Qué es el hardware?',
@@ -309,7 +306,7 @@ Ejemplos de hardware comunes:
                       textAlign: TextAlign.justify,
                     ),
 
-                    // Subtítulo con estilo destacado y color azul
+                    // Subtítulo destacado con color azul
                     Text(
                       'Ejemplos de hardware comunes:\n',
                       style: TextStyle(
@@ -321,69 +318,91 @@ Ejemplos de hardware comunes:
 
                     const SizedBox(height: 8),
 
-                    // Lista detallada usando RichText para dar formato al texto
-                    RichText(
-                      text: TextSpan(
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                    // Semantics envuelve el RichText para mejorar la accesibilidad,
+                    Semantics(
+                      label: '''
+1. Monitor: Muestra información en pantalla (salida)
+
+2. Teclado: Permite al usuario ingresar datos, texto, comandos y funciones
+
+3. Ratón: Se usa para mover el cursor y hacer clic
+
+4. CPU o torre: Es el cerebro del computador, donde se procesan los datos (proceso)
+
+5. Impresora: Saca los documentos en papel
+
+6. Altavoces: Reproducen sonido
+
+7. Cámara web: Sirve para hacer videollamadas
+
+8. Micrófono: Permite grabar o hablar en videollamadas
+''',
+                      child: RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
+                          children: const [
+                            TextSpan(
+                              text: '1. Monitor:\n\n',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text:
+                                  'Muestra información en pantalla (salida)\n\n',
+                            ),
+                            TextSpan(
+                              text: '2. Teclado:\n\n',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text:
+                                  'Permite al usuario ingresar datos, texto, comandos y funciones\n\n',
+                            ),
+                            TextSpan(
+                              text: '3. Ratón:\n\n',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text:
+                                  'Se usa para mover el cursor y hacer clic\n\n',
+                            ),
+                            TextSpan(
+                              text: '4. CPU o torre:\n\n',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text:
+                                  'Es el cerebro del computador, donde se procesan los datos (proceso)\n\n',
+                            ),
+                            TextSpan(
+                              text: '5. Impresora:\n\n',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(text: 'Saca los documentos en papel\n\n'),
+                            TextSpan(
+                              text: '6. Altavoces:\n\n',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(text: 'Reproducen sonido\n\n'),
+                            TextSpan(
+                              text: '7. Cámara web:\n\n',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text: 'Sirve para hacer videollamadas\n\n',
+                            ),
+                            TextSpan(
+                              text: '8. Micrófono:\n\n',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text:
+                                  'Permite grabar o hablar en videollamadas\n',
+                            ),
+                          ],
                         ),
-                        children: const [
-                          TextSpan(
-                            text: '1. Monitor:\n\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text:
-                                'Muestra información en pantalla (salida)\n\n',
-                          ),
-                          TextSpan(
-                            text: '2. Teclado:\n\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text:
-                                'Permite al usuario ingresar datos, texto, comandos y funciones\n\n',
-                          ),
-                          TextSpan(
-                            text: '3. Ratón:\n\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text:
-                                'Se usa para mover el cursor y hacer clic\n\n',
-                          ),
-                          TextSpan(
-                            text: '4. CPU o torre:\n\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text:
-                                'Es el cerebro del computador, donde se procesan los datos (proceso)\n\n',
-                          ),
-                          TextSpan(
-                            text: '5. Impresora:\n\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(text: 'Saca los documentos en papel\n\n'),
-                          TextSpan(
-                            text: '6. Altavoces:\n\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(text: 'Reproducen sonido\n\n'),
-                          TextSpan(
-                            text: '7. Cámara web:\n\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(text: 'Sirve para hacer videollamadas\n\n'),
-                          TextSpan(
-                            text: '8. Micrófono:\n\n',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text: 'Permite grabar o hablar en videollamadas\n',
-                          ),
-                        ],
                       ),
                     ),
                   ],
@@ -398,6 +417,7 @@ Ejemplos de hardware comunes:
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
+                // Navega a la pantalla del quiz al presionar el botón
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const QuizScreen()),

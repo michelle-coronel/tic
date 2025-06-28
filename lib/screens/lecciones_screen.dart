@@ -12,38 +12,43 @@ class LeccionesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); // Obtiene el tema actual
+    final theme = Theme.of(context); // Obtiene el tema actual (claro u oscuro)
     final textColor =
         theme.textTheme.bodyLarge?.color ??
         Colors.black; // Color de texto adaptativo
-    final backgroundColor =
-        theme.scaffoldBackgroundColor; // Color de fondo adaptativo
+    final backgroundColor = theme.scaffoldBackgroundColor; // Fondo adaptativo
 
-    // Colores para estado activo/inactivo según tema claro u oscuro
+    // CONTRASTE ADAPTATIVO MEJORADO
+
+    // Color para ítems activos: negro en claro, ámbar en oscuro
     final Color colorActivo = theme.brightness == Brightness.dark
         ? Colors.amberAccent
         : Colors.black;
-    final Color colorInactivo = Colors.grey;
+
+    // Color para ítems inactivos:
+    // ANTES: era fijo (como Colors.grey), lo que causaba bajo contraste en modo oscuro
+    // AHORA: se adapta al tema — blanco translúcido en oscuro y negro translúcido en claro
+    final Color colorInactivo = theme.brightness == Brightness.dark
+        ? Colors
+              .white54 // íconos claros sobre fondo oscuro
+        : Colors.black54; // íconos oscuros sobre fondo claro
 
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        automaticallyImplyLeading:
-            false, // No muestra botón de regresar automáticamente
+        automaticallyImplyLeading: false,
         backgroundColor: backgroundColor,
-        elevation: 0, // Sin sombra
+        elevation: 0,
         title: Text(
-          'Temas de Informática', // Título de la appbar
+          'Temas de Informática',
           style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
         ),
-        iconTheme: IconThemeData(
-          color: textColor,
-        ), // Color de íconos adaptativo
+        iconTheme: IconThemeData(color: textColor),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Título "Categorías" con padding
+          // Título principal
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 20, 15),
             child: Text(
@@ -55,50 +60,45 @@ class LeccionesScreen extends StatelessWidget {
               ),
             ),
           ),
-
-          // Subtítulo o mensaje debajo
+          // Subtítulo
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               'Continúa los patrones',
               style: TextStyle(
                 fontSize: 20,
-                color: textColor.withAlpha((0.6 * 255).round()), // Opacidad 60%
+                color: textColor.withAlpha((0.6 * 255).round()), // 60% opacidad
               ),
             ),
           ),
-
-          const SizedBox(height: 16), // Espacio vertical
-          // Lista expandida que ocupa todo el espacio restante
+          const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
-              itemCount: categorias.length, // Número de categorías a mostrar
+              itemCount: categorias.length,
               itemBuilder: (context, index) {
                 final categoria = categorias[index];
+                final bool esActivo = categoria.activo;
+                final bool estaCompletado = categoria.completado;
 
-                final bool esActivo =
-                    categoria.activo; // Si está habilitada para el usuario
-                final bool estaCompletado =
-                    categoria.completado; // Si ya completó esta categoría
-
-                // Color para icono y texto: activo o inactivo
+                // Color del ícono: activo o inactivo
                 Color iconColor = esActivo ? colorActivo : colorInactivo;
-                // Color del borde: verde si completado, si no, color normal según activo/inactivo
-                Color bordeColor = estaCompletado ? Colors.green : iconColor;
 
-                // Fondo dinámico según tema (claro u oscuro)
+                // Color del borde: verde si completado, si no el color del ícono
+                Color bordeColor = estaCompletado
+                    ? const Color(0xFF2E7D32) // verde más fuerte
+                    : iconColor;
+
+                // CAMBIO CLAVE PARA MEJOR CONTRASTE DE FONDO
+                // Fondo donde se coloca el ícono:
+                // ANTES: era muy claro (#FEF7FF), con bajo contraste frente al ícono gris
+                // AHORA: gris claro (#ECECEC) en modo claro, gris oscuro en modo oscuro
                 Color fondoColor = theme.brightness == Brightness.dark
-                    ? Colors.grey[800]! // Gris oscuro en modo oscuro
-                    : const Color.fromARGB(
-                        255,
-                        251,
-                        248,
-                        248,
-                      ); // Blanco grisáceo claro
+                    ? Colors.grey[800]! // fondo oscuro en modo oscuro
+                    : const Color(0xFFECECEC); // fondo gris claro mejorado
 
                 return ListTile(
                   onTap: () {
-                    // Si ya completó esta categoría, muestra un mensaje felicitando
+                    // Categoría completada: muestra felicitación
                     if (categoria.completado) {
                       showDialog(
                         context: context,
@@ -116,10 +116,9 @@ class LeccionesScreen extends StatelessWidget {
                         ),
                       );
                     }
-                    // Si está activo, se permite entrar a detalle según categoría
+                    // Categoría activa: navega a su detalle
                     else if (categoria.activo) {
                       if (categoria.nombre == 'Software') {
-                        // Navega a pantalla detalle Software
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -128,7 +127,6 @@ class LeccionesScreen extends StatelessWidget {
                           ),
                         );
                       } else if (categoria.nombre == 'Sistemas Operativos') {
-                        // Para esta categoría muestra mensaje simple
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
@@ -143,7 +141,6 @@ class LeccionesScreen extends StatelessWidget {
                           ),
                         );
                       } else {
-                        // Para otras categorías muestra su detalle general
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -153,7 +150,7 @@ class LeccionesScreen extends StatelessWidget {
                         );
                       }
                     }
-                    // Si no está activo ni completado, muestra alerta para avanzar primero
+                    // Categoría inactiva: muestra advertencia
                     else {
                       showDialog(
                         context: context,
@@ -172,28 +169,27 @@ class LeccionesScreen extends StatelessWidget {
                       );
                     }
                   },
-
-                  // Vista de cada elemento de la lista (ListTile)
                   title: Row(
                     children: [
-                      // Contenedor que muestra el ícono con fondo y borde
+                      // Contenedor del ícono con fondo y borde
                       Container(
                         width: 85,
                         height: 85,
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: fondoColor,
+                          color:
+                              fondoColor, // color de fondo mejorado para contraste
                           border: Border.all(color: bordeColor, width: 2),
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: Image.asset(
                           categoria.iconoPath,
-                          color: iconColor,
+                          color:
+                              iconColor, // color adaptativo para accesibilidad
                         ),
                       ),
-
-                      const SizedBox(width: 14), // Espacio horizontal
-                      // Columna con nombre y estado de completado
+                      const SizedBox(width: 14),
+                      // Información textual
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +206,7 @@ class LeccionesScreen extends StatelessWidget {
                               const Text(
                                 '¡Completado!',
                                 style: TextStyle(
-                                  color: Colors.green,
+                                  color: Color(0xFF2E7D32), // verde fuerte
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),
