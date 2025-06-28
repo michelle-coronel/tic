@@ -389,7 +389,11 @@ class _QuizScreenState extends State<QuizScreen> {
                           elevation: 4,
                         ),
                         child: Text(
-                          _isCorrect ? 'Continuar' : 'Volver a intentar',
+                          _isCorrect
+                              ? (_current == _questions.length - 1
+                                    ? 'Finalizar Quiz'
+                                    : 'Continuar')
+                              : 'Volver a intentar',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
