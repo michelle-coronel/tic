@@ -9,13 +9,16 @@ class SugerirTemaScreen extends StatefulWidget {
 }
 
 class _SugerirTemaScreenState extends State<SugerirTemaScreen> {
-  // Controlador para el campo de texto donde el usuario escribe el título del tema
+  // Controlador para manejar el texto ingresado en el campo "Título del tema"
   final TextEditingController tituloController = TextEditingController();
 
-  // Variable para almacenar la categoría seleccionada del dropdown
+  // Variable para almacenar la categoría seleccionada en el dropdown
   String? categoriaSeleccionada;
 
-  // Lista de categorías disponibles para la sugerencia
+  // Key para identificar y controlar el estado del formulario, necesario para validaciones
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  // Lista de categorías disponibles para que el usuario seleccione
   final List<String> categorias = [
     'Programación',
     'Desarrollo web',
@@ -26,147 +29,188 @@ class _SugerirTemaScreenState extends State<SugerirTemaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Detecta si el tema actual es oscuro para adaptar colores
+    // Detecta si el tema de la app es oscuro para adaptar estilos visuales
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sugerir tema'),
-      ), // Barra superior con título
+      // Barra superior con el título de la pantalla
+      appBar: AppBar(title: const Text('Sugerir tema')),
+
+      // Contenido principal de la pantalla
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16), // Espaciado general
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            const Text(
-              '¿Te gustaría que incluyéramos algún tema en nuestra aplicación? ¡No esperes más y cuéntanos cuál es!',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ), // Texto introductorio motivando al usuario a sugerir un tema
-            const SizedBox(height: 24),
-
-            // Contenedor con borde y fondo adaptado a modo claro u oscuro
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade400),
+        padding: const EdgeInsets.all(
+          16,
+        ), // Espaciado interno en toda la pantalla
+        child: Form(
+          key: _formKey, // Asocia el formulario a la key para validar
+          child: Column(
+            children: [
+              const SizedBox(height: 10), // Espacio vertical pequeño
+              const Text(
+                '¿Te gustaría que incluyéramos algún tema en nuestra aplicación? ¡No esperes más y cuéntanos cuál es!',
+                textAlign: TextAlign.center, // Texto centrado
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Etiqueta para el campo del título
-                  const Text(
-                    'Título del tema',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
+              const SizedBox(
+                height: 24,
+              ), // Espacio vertical entre texto y formulario
 
-                  // Campo de texto para ingresar el título del tema sugerido
-                  TextFormField(
-                    controller: tituloController,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                    decoration: _inputDecoration(isDark).copyWith(
-                      hintText: 'Ej. Almacenamiento de archivos',
-                      hintStyle: TextStyle(
-                        color: isDark
-                            ? Colors.grey.shade300
-                            : Colors.grey.shade600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Etiqueta para el dropdown de categoría
-                  const Text(
-                    'Categoría',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Dropdown para seleccionar la categoría del tema
-                  DropdownButtonFormField<String>(
-                    decoration: _inputDecoration(isDark),
-                    value: categoriaSeleccionada,
-                    hint: const Text('Seleccione una categoría'),
-                    dropdownColor: isDark ? Colors.grey.shade800 : Colors.white,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                    items: categorias
-                        .map(
-                          (cat) =>
-                              DropdownMenuItem(value: cat, child: Text(cat)),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        categoriaSeleccionada = value; // Actualiza la selección
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Botón para enviar la sugerencia
-            SizedBox(
-              width: double.infinity, // Ancho completo
-              child: ElevatedButton(
-                onPressed: () {
-                  // Valida que ambos campos estén completos
-                  if (tituloController.text.isEmpty ||
-                      categoriaSeleccionada == null) {
-                    // Muestra mensaje de error si falta algún dato
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Por favor completa todos los campos'),
-                      ),
-                    );
-                  } else {
-                    // Aquí podrías agregar código para enviar o guardar la sugerencia
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('¡Tema sugerido con éxito!'),
-                      ),
-                    );
-                    // Limpia el campo y resetea el dropdown después de enviar
-                    tituloController.clear();
-                    setState(() {
-                      categoriaSeleccionada = null;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber, // Fondo amarillo
-                  foregroundColor: Colors.black, // Texto negro
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+              Container(
+                padding: const EdgeInsets.all(
+                  16,
+                ), // Padding interno del contenedor
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.grey.shade800
+                      : Colors.grey.shade100, // Fondo según tema
+                  borderRadius: BorderRadius.circular(16), // Bordes redondeados
+                  border: Border.all(
+                    color: Colors.grey.shade400,
+                  ), // Borde gris claro
                 ),
-                child: const Text('Enviar', style: TextStyle(fontSize: 18)),
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start, // Alinear al inicio (izquierda)
+                  children: [
+                    // Etiqueta para el campo título
+                    const Text(
+                      'Título del tema',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Campo para ingresar el título del tema sugerido
+                    TextFormField(
+                      controller:
+                          tituloController, // Controlador para obtener el texto
+                      style: TextStyle(
+                        color: isDark
+                            ? Colors.white
+                            : Colors.black, // Color según tema
+                      ),
+                      decoration: _inputDecoration(isDark).copyWith(
+                        hintText:
+                            'Ej. Almacenamiento de archivos', // Texto placeholder
+                        hintStyle: TextStyle(
+                          color: isDark
+                              ? Colors.grey.shade300
+                              : Colors.grey.shade600,
+                        ),
+                      ),
+                      // Validador para asegurar que no esté vacío
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Por favor ingresa un título'; // Mensaje de error
+                        }
+                        return null; // Campo válido
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Etiqueta para el dropdown de categoría
+                    const Text(
+                      'Categoría',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Dropdown para seleccionar la categoría del tema
+                    DropdownButtonFormField<String>(
+                      decoration: _inputDecoration(
+                        isDark,
+                      ), // Estilo del dropdown
+                      value: categoriaSeleccionada, // Valor seleccionado actual
+                      hint: const Text(
+                        'Seleccione una categoría',
+                      ), // Placeholder
+                      dropdownColor: isDark
+                          ? Colors.grey.shade800
+                          : Colors.white,
+                      style: TextStyle(
+                        color: isDark
+                            ? Colors.white
+                            : Colors.black, // Color del texto
+                      ),
+                      items: categorias
+                          .map(
+                            (cat) => DropdownMenuItem(
+                              value: cat, // Valor que se guarda
+                              child: Text(cat), // Texto visible
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        // Actualiza el estado con la categoría seleccionada
+                        setState(() {
+                          categoriaSeleccionada = value;
+                        });
+                      },
+                      // Validador para asegurarse que se seleccione una categoría
+                      validator: (value) => value == null
+                          ? 'Por favor selecciona una categoría'
+                          : null,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+
+              // Botón para enviar la sugerencia
+              SizedBox(
+                width: double.infinity, // Ocupa todo el ancho disponible
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Al presionar, valida el formulario completo
+                    if (_formKey.currentState!.validate()) {
+                      // Si es válido, muestra un mensaje y limpia los campos
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('¡Tema sugerido con éxito!'),
+                        ),
+                      );
+                      tituloController.clear(); // Limpia campo texto
+                      setState(() {
+                        categoriaSeleccionada =
+                            null; // Limpia selección dropdown
+                      });
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber, // Fondo amarillo
+                    foregroundColor: Colors.black, // Texto negro
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                    ), // Padding vertical
+                  ),
+                  child: const Text('Enviar', style: TextStyle(fontSize: 18)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // Método para decoración uniforme de inputs, adaptando para modo oscuro
+  // Método que devuelve la decoración para los campos de texto y dropdown
   InputDecoration _inputDecoration(bool isDark) {
     return InputDecoration(
-      filled: true,
-      fillColor: isDark ? Colors.grey.shade700 : Colors.white,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      filled: true, // Rellenar fondo
+      fillColor: isDark
+          ? Colors.grey.shade700
+          : Colors.white, // Color fondo según tema
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 12,
+      ), // Padding interno
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(12), // Bordes redondeados
+        borderSide: BorderSide(color: Colors.grey.shade300), // Color del borde
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(
+          12,
+        ), // Bordes para estado habilitado
         borderSide: BorderSide(color: Colors.grey.shade300),
       ),
     );

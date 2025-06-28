@@ -73,7 +73,7 @@ class _AjustesScreenState extends State<AjustesScreen> {
               Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.text_fields),
+                    leading: const Icon(Icons.format_size),
                     title: const Text('Tamaño de la letra'),
                     onTap: () {
                       setState(() {
@@ -91,19 +91,23 @@ class _AjustesScreenState extends State<AjustesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Tamaño de la letra'),
+                          const Text('Escoja el tamaño'),
                           const SizedBox(height: 8),
 
                           // Letras pequeñas y grandes para referencia visual
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
-                              Text('A'),
+                              ExcludeSemantics(child: Text('A')),
                               Expanded(child: SizedBox()),
-                              Text('A', style: TextStyle(fontSize: 24)),
+                              ExcludeSemantics(
+                                child: Text(
+                                  'A',
+                                  style: TextStyle(fontSize: 24),
+                                ),
+                              ),
                             ],
                           ),
-
                           // Slider para cambiar tamaño de letra
                           Slider(
                             value: tamanioLetra,
@@ -167,7 +171,7 @@ class _AjustesScreenState extends State<AjustesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Alineación de texto'),
+                          const Text('Escoja la alineación'),
                           const SizedBox(height: 8),
 
                           // Iconos de las distintas alineaciones
