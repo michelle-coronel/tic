@@ -507,6 +507,17 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                 ),
               ),
               const SizedBox(height: 8),
+              // Aquí va el Semantics
+              Semantics(
+                label:
+                    'Lista desplegable accesible. Usa TalkBack para seleccionar una opción.',
+                child: const Text(
+                  'Modo accesible activado: selecciona una opción de la lista.',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ),
+              const SizedBox(height: 4),
+
               SizedBox(
                 width: double.infinity,
                 child: DropdownButtonFormField<String>(
@@ -516,6 +527,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                     labelText: 'Selecciona una categoría',
                     border: OutlineInputBorder(),
                   ),
+
                   dropdownColor: isDarkMode ? Colors.grey[800] : Colors.white,
                   onChanged: _answered
                       ? null

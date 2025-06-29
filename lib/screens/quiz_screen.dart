@@ -228,6 +228,7 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
+  /*
   // Construye el campo de texto para preguntas tipo completar
   Widget _buildCompletar(Question q) {
     final theme = Theme.of(context);
@@ -246,6 +247,75 @@ class _QuizScreenState extends State<QuizScreen> {
       ),
       style: TextStyle(color: textColor, fontSize: 18),
     );
+  }*/
+  Widget _buildCompletar(Question q) {
+    final theme = Theme.of(context);
+    final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
+
+    final bool talkBackActivo = MediaQuery.of(context).accessibleNavigation;
+
+    // Lista de sugerencias (puedes personalizar por pregunta si deseas)
+    final List<String> sugerencias = [
+      q.answerText ?? '',
+      'CPU',
+      'Entrada',
+      'Monitor',
+    ];
+
+    if (talkBackActivo) {
+      // Modo accesible: mostrar Autocomplete o Dropdown
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DropdownButtonFormField<String>(
+            value: _textAnswer.isNotEmpty ? _textAnswer : null,
+            items: sugerencias.map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: TextStyle(fontSize: 18)),
+              );
+            }).toList(),
+            onChanged: !_answered
+                ? (String? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _textAnswer = newValue;
+                      });
+                    }
+                  }
+                : null,
+            decoration: const InputDecoration(
+              labelText: 'Selecciona una respuesta',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Semantics(
+            label:
+                'Lista desplegable accesible. Usa TalkBack para seleccionar una opción.',
+            child: const Text(
+              'Modo accesible activado: selecciona una opción de la lista.',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ),
+        ],
+      );
+    } else {
+      // Modo normal: TextField editable
+      return TextField(
+        enabled: !_answered,
+        onChanged: (value) {
+          setState(() {
+            _textAnswer = value;
+          });
+        },
+        decoration: const InputDecoration(
+          labelText: 'Escribe la respuesta',
+          border: OutlineInputBorder(),
+        ),
+        style: TextStyle(color: textColor, fontSize: 18),
+      );
+    }
   }
 
   // Construcción principal de la UI
