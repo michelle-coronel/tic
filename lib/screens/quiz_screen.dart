@@ -228,26 +228,6 @@ class _QuizScreenState extends State<QuizScreen> {
     );
   }
 
-  /*
-  // Construye el campo de texto para preguntas tipo completar
-  Widget _buildCompletar(Question q) {
-    final theme = Theme.of(context);
-    final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
-
-    return TextField(
-      enabled: !_answered, // Solo permite escribir si no se ha respondido aún
-      onChanged: (value) {
-        setState(() {
-          _textAnswer = value; // Actualiza texto ingresado
-        });
-      },
-      decoration: const InputDecoration(
-        labelText: 'Escribe la respuesta',
-        border: OutlineInputBorder(),
-      ),
-      style: TextStyle(color: textColor, fontSize: 18),
-    );
-  }*/
   Widget _buildCompletar(Question q) {
     final theme = Theme.of(context);
     final textColor = theme.textTheme.bodyLarge?.color ?? Colors.black;
