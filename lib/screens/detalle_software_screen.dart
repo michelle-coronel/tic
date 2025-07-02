@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart'; // Librería para síntesis de voz (Text-To-Speech)
+import 'package:flutter_tts/flutter_tts.dart';
+import 'quiz_software_screen.dart';
+import '../models/categoria.dart';
 
-import 'quiz_software_screen.dart'; // Importa la pantalla del quiz de software
-import '../models/categoria.dart'; // Modelo Categoria
-
-// Widget Stateful que muestra el detalle de la categoría de Software y permite lectura en voz alta
+// Pantalla que muestra detalles sobre el software y permite iniciar el quiz
 class DetalleSoftwareScreen extends StatefulWidget {
-  final Categoria categoria; // Recibe la categoría para mostrar su nombre
+  final Categoria categoria;
 
   const DetalleSoftwareScreen({super.key, required this.categoria});
 
@@ -15,9 +14,9 @@ class DetalleSoftwareScreen extends StatefulWidget {
 }
 
 class _DetalleSoftwareScreenState extends State<DetalleSoftwareScreen> {
-  final FlutterTts flutterTts = FlutterTts(); // Instancia para síntesis de voz
+  final FlutterTts flutterTts = FlutterTts(); // Motor de texto a voz
 
-  // Texto largo que se leerá con voz
+  // Texto que se reproducirá por voz
   final String textoALeer = '''
 El software es el conjunto de programas, instrucciones y datos que permiten a una computadora realizar tareas específicas. A diferencia del hardware (las partes físicas), el software no se puede tocar y es esencial para el funcionamiento del equipo.
 
@@ -35,19 +34,19 @@ Juegos: Minecraft, Fortnite
 Programación: Python, Visual Studio Code
 ''';
 
-  bool isSpeaking = false; // Indica si está leyendo
-  bool isPaused = false; // Indica si la lectura está pausada
+  // Estados de reproducción de voz
+  bool isSpeaking = false;
+  bool isPaused = false;
 
   @override
   void initState() {
     super.initState();
+    // Configuración inicial del TTS
+    flutterTts.setLanguage('es-ES');
+    flutterTts.setPitch(1.0);
+    flutterTts.setSpeechRate(0.5);
 
-    // Configura el lenguaje, tono y velocidad del TTS
-    flutterTts.setLanguage('es-ES'); // Español de España
-    flutterTts.setPitch(1.0); // Tono normal
-    flutterTts.setSpeechRate(0.5); // Velocidad media-lenta
-
-    // Maneja eventos de inicio de lectura
+    // Manejadores de eventos del TTS
     flutterTts.setStartHandler(() {
       setState(() {
         isSpeaking = true;
@@ -55,7 +54,6 @@ Programación: Python, Visual Studio Code
       });
     });
 
-    // Evento cuando termina la lectura
     flutterTts.setCompletionHandler(() {
       setState(() {
         isSpeaking = false;
@@ -63,7 +61,6 @@ Programación: Python, Visual Studio Code
       });
     });
 
-    // Evento cuando la lectura es pausada
     flutterTts.setPauseHandler(() {
       setState(() {
         isSpeaking = false;
@@ -71,7 +68,6 @@ Programación: Python, Visual Studio Code
       });
     });
 
-    // Evento cuando la lectura se reanuda
     flutterTts.setContinueHandler(() {
       setState(() {
         isSpeaking = true;
@@ -79,7 +75,6 @@ Programación: Python, Visual Studio Code
       });
     });
 
-    // Evento cuando la lectura es cancelada
     flutterTts.setCancelHandler(() {
       setState(() {
         isSpeaking = false;
@@ -90,25 +85,24 @@ Programación: Python, Visual Studio Code
 
   @override
   void dispose() {
-    // Para la lectura al cerrar la pantalla
-    flutterTts.stop();
+    flutterTts.stop(); // Detiene la lectura si el widget se elimina
     super.dispose();
   }
 
-  // Métodos para controlar la lectura de voz
+  // Métodos para controlar el texto a voz
   Future<void> _speak() async => await flutterTts.speak(textoALeer);
   Future<void> _pause() async => await flutterTts.pause();
   Future<void> _continue() async => await flutterTts.speak(textoALeer);
   Future<void> _stop() async => await flutterTts.stop();
 
-  // Texto del botón según estado actual de lectura
+  // Texto del botón de voz según el estado
   String get estadoTexto {
     if (isSpeaking) return 'Pausar';
     if (isPaused) return 'Reanudar';
     return 'Escuchar';
   }
 
-  // Ícono del botón según estado actual de lectura
+  // Icono del botón de voz según el estado
   IconData get estadoIcono {
     if (isSpeaking) return Icons.pause;
     if (isPaused) return Icons.play_arrow;
@@ -117,12 +111,15 @@ Programación: Python, Visual Studio Code
 
   @override
   Widget build(BuildContext context) {
+    final double baseFontSize = 16.0;
+    final double titleFontSize = 20.0;
+    final double subtitleFontSize = 18.0;
+    final double textScale = MediaQuery.of(context).textScaleFactor;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget
-              .categoria
-              .nombre, // Muestra el nombre de la categoría en la barra superior
+          widget.categoria.nombre,
           style:
               Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -133,13 +130,13 @@ Programación: Python, Visual Studio Code
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Fila con botones para controlar la lectura en voz alta
+          // Botones para reproducir, pausar y detener la voz
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Botón principal para reproducir, pausar o reanudar el texto
+                // Botón Escuchar / Pausar / Reanudar
                 Semantics(
                   label: '$estadoTexto el texto con voz',
                   button: true,
@@ -169,7 +166,7 @@ Programación: Python, Visual Studio Code
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withAlpha((0.3 * 255).round()),
+                            color: Colors.black.withOpacity(0.3),
                             offset: const Offset(0, 3),
                             blurRadius: 6,
                           ),
@@ -200,8 +197,7 @@ Programación: Python, Visual Studio Code
                     ),
                   ),
                 ),
-
-                // Botón para detener completamente la lectura
+                // Botón Detener lectura
                 Semantics(
                   label: 'Detener lectura de voz',
                   button: true,
@@ -220,7 +216,7 @@ Programación: Python, Visual Studio Code
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withAlpha((0.3 * 255).round()),
+                            color: Colors.black.withOpacity(0.3),
                             offset: const Offset(0, 3),
                             blurRadius: 6,
                           ),
@@ -238,37 +234,35 @@ Programación: Python, Visual Studio Code
             ),
           ),
 
-          // Contenido principal con explicación y ejemplos sobre software
+          // Contenido principal con scroll
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey), // Borde gris
-                  borderRadius: BorderRadius.circular(12), // Bordes redondeados
-                  color: Theme.of(
-                    context,
-                  ).cardColor, // Color de tarjeta según tema
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).cardColor,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Título centrado
+                    // Título
                     Center(
                       child: Text(
                         '¿Qué es el software?',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: titleFontSize,
+                        ),
                         textAlign: TextAlign.center,
+                        textScaleFactor: textScale,
                       ),
                     ),
                     const SizedBox(height: 16),
 
-                    // Imagen representativa
+                    // Imagen
                     Center(
                       child: Image.asset(
                         'assets/images/software.jpg',
@@ -277,124 +271,217 @@ Programación: Python, Visual Studio Code
                     ),
                     const SizedBox(height: 16),
 
-                    // Texto descriptivo con semántica para accesibilidad
-                    Semantics(
-                      label:
-                          'Descripción del software: El software es el conjunto de programas, instrucciones y datos que permiten a una computadora realizar tareas específicas. A diferencia del hardware, el software no se puede tocar y es esencial para el funcionamiento del equipo.',
-                      child: const Text(
-                        'El software es el conjunto de programas, instrucciones y datos que permiten a una computadora realizar tareas específicas. '
-                        '\n\n A diferencia del hardware (las partes físicas), el software no se puede tocar y es esencial para el funcionamiento del equipo.\n',
-                        style: TextStyle(fontSize: 16),
-                        textAlign: TextAlign.justify,
-                      ),
+                    // Descripción del software
+                    Text(
+                      'El software es el conjunto de programas, instrucciones y datos que permiten a una computadora realizar tareas específicas.\n\n'
+                      'A diferencia del hardware (las partes físicas), el software no se puede tocar y es esencial para el funcionamiento del equipo.\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textAlign: TextAlign.justify,
+                      textScaleFactor: textScale,
                     ),
-                    const SizedBox(height: 8),
 
-                    // Subtítulo para tipos y ejemplos
+                    // Tipos y ejemplos
+                    const SizedBox(height: 8),
                     Text(
                       'Tipos y ejemplos de software:\n',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: subtitleFontSize,
                         fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 13, 116, 200),
+                        color: Color.fromARGB(255, 13, 116, 200),
                       ),
+                      textScaleFactor: textScale,
                     ),
+
                     const SizedBox(height: 8),
-
-                    // Texto enriquecido con los tipos y ejemplos de software, con semántica para lectores de pantalla
-                    Semantics(
-                      label: '''
-1. Software de sistema: Controla y gestiona el hardware
-
-2. Software de aplicación: Permite al usuario realizar tareas específicas
-
-3. Software de programación: Herramientas para crear otros programas
-
-Ejemplos:
-• Sistemas operativos: Windows, macOS, Linux, Android
-• Aplicaciones: Word, Excel, Photoshop, WhatsApp
-• Navegadores web: Chrome, Firefox, Safari
-• Juegos: Minecraft, Fortnite
-• Programación: Python, Visual Studio Code
-''',
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                          ),
-                          children: const [
-                            TextSpan(
-                              text: 'Tipos de software:\n\n',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 13, 116, 200),
-                              ),
-                            ),
-                            TextSpan(
-                              text: '• Software de sistema:\n\n',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text: 'Controla y gestiona el hardware\n\n',
-                            ),
-                            TextSpan(
-                              text: '• Software de aplicación:\n\n',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text:
-                                  'Permite al usuario realizar tareas específicas\n\n',
-                            ),
-                            TextSpan(
-                              text: '• Software de programación:\n\n',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text:
-                                  'Herramientas para crear otros programas\n\n',
-                            ),
-                            TextSpan(
-                              text: 'Ejemplos de software:\n\n',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Color.fromARGB(255, 13, 116, 200),
-                              ),
-                            ),
-                            TextSpan(
-                              text: '• Sistemas operativos:\n\n',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text: 'Windows, macOS, Linux, Android\n\n',
-                            ),
-                            TextSpan(
-                              text: '• Aplicaciones:\n\n',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text: 'Word, Excel, Photoshop, WhatsApp\n\n',
-                            ),
-                            TextSpan(
-                              text: '• Navegadores web:\n\n',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(text: 'Chrome, Firefox, Safari\n\n'),
-                            TextSpan(
-                              text: '• Juegos:\n\n',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(text: 'Minecraft, Fortnite\n\n'),
-                            TextSpan(
-                              text: '• Programación:\n\n',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(text: 'Python, Visual Studio Code\n\n'),
-                          ],
-                        ),
+                    // Software de sistema
+                    Text(
+                      '• Software de sistema:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
                       ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Controla y gestiona el hardware\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    // Software de aplicación
+                    Text(
+                      '• Software de aplicación:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Permite al usuario realizar tareas específicas\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    // Software de programación
+                    Text(
+                      '• Software de programación:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Herramientas para crear otros programas\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 16),
+                    // Ejemplos
+                    Text(
+                      'Ejemplos de software:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: subtitleFontSize,
+                        color: Color.fromARGB(255, 13, 116, 200),
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+
+                    // Lista de ejemplos
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Sistemas operativos:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Windows, macOS, Linux, Android\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Aplicaciones:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Word, Excel, Photoshop, WhatsApp\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Navegadores web:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Chrome, Firefox, Safari\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Juegos:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Minecraft, Fortnite\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Programación:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Python, Visual Studio Code\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 16),
+                    Text(
+                      'Herramientas en educación:\n',
+                      style: TextStyle(
+                        fontSize: subtitleFontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 13, 116, 200),
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Herramientas de apoyo:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Zoom, Meet\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Herramientas de evaluación\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Google Forms\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
+                    ),
+
+                    const SizedBox(height: 8),
+                    Text(
+                      '• Herramientas de Enseñanza/Aprendizaje:\n',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: baseFontSize,
+                      ),
+                      textScaleFactor: textScale,
+                    ),
+                    Text(
+                      'Duolingo, Khan Academy\n',
+                      style: TextStyle(fontSize: baseFontSize),
+                      textScaleFactor: textScale,
                     ),
                   ],
                 ),
@@ -402,13 +489,12 @@ Ejemplos:
             ),
           ),
 
-          // Botón al pie para iniciar el quiz de software
+          // Botón inferior para iniciar el quiz
           Container(
             padding: const EdgeInsets.all(16),
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                // Navega a la pantalla del quiz de software
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const QuizSoftwareScreen()),

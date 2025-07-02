@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import '../models/question.dart'; // Importa el modelo Question que define las preguntas
+import 'package:provider/provider.dart'; // <--- Importa provider
+import '../models/question.dart';
+import 'settings_provider.dart'; // Ajusta ruta según ubicación
 
-// Pantalla que muestra los resultados detallados del quiz de Hardware
 class ResultadosScreenHardware extends StatelessWidget {
-  // Variables que recibe el widget para mostrar resultados
-  final int score; // Puntaje obtenido en el quiz
-  final int totalQuestions; // Total de preguntas del quiz
-  final String tiempoTotal; // Tiempo total empleado (en formato texto)
-  final List<Question> questions; // Lista con todas las preguntas y sus datos
+  final int score;
+  final int totalQuestions;
+  final String tiempoTotal;
+  final List<Question> questions;
 
-  // Constructor que requiere todos los parámetros para funcionar
   const ResultadosScreenHardware({
     super.key,
     required this.score,
@@ -20,55 +19,45 @@ class ResultadosScreenHardware extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calcula el porcentaje de aciertos (puntaje dividido entre total preguntas)
     final double porcentaje = (score / totalQuestions) * 100;
-    // Obtiene el tema actual para ajustar estilos según modo claro u oscuro
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    // Obtener tamaño de fuente dinámico del provider
+    final settings = Provider.of<SettingsProvider>(context);
+    final fontSize = settings.fontSize;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Detalles del Resultado',
-        ), // Título en la barra superior
-        centerTitle: true, // Centra el título
+        title: const Text('Detalles del Resultado'),
+        centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16), // Espaciado alrededor del contenido
+        padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            // Contenedor con resumen de tiempo y puntaje
             Container(
-              padding: const EdgeInsets.all(16), // Espacio interno
-              margin: const EdgeInsets.only(
-                bottom: 24,
-              ), // Margen debajo para separar del resto
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: 24),
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF2E2E2E) // Color fondo para modo oscuro
-                    : const Color(
-                        0xFFD1ECF1,
-                      ), // Color fondo para modo claro (celeste)
-                borderRadius: BorderRadius.circular(12), // Bordes redondeados
+                    ? const Color(0xFF2E2E2E)
+                    : const Color(0xFFD1ECF1),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isDark
-                      ? Colors.grey[700]!
-                      : const Color(0xFFBEE5EB), // Color borde según tema
+                  color: isDark ? Colors.grey[700]! : const Color(0xFFBEE5EB),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(
-                      (0.05 * 255).round(),
-                    ), // Sombra ligera
+                    color: Colors.black.withAlpha((0.05 * 255).round()),
                     blurRadius: 5,
-                    offset: const Offset(0, 2), // Desplazamiento sombra
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Texto accesible para lectores de pantalla
                   Semantics(
                     container: true,
                     label: 'Has completado el módulo de Hardware.',
@@ -77,8 +66,7 @@ class ResultadosScreenHardware extends StatelessWidget {
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
-                  const SizedBox(height: 6), // Espaciado vertical
-                  // Fila que muestra la etiqueta "Tiempo" y el valor con semántica para accesibilidad
+                  const SizedBox(height: 6),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -99,8 +87,7 @@ class ResultadosScreenHardware extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4), // Espaciado pequeño
-                  // Texto que muestra el puntaje y porcentaje con accesibilidad
+                  const SizedBox(height: 4),
                   Semantics(
                     container: true,
                     label:
@@ -128,38 +115,24 @@ class ResultadosScreenHardware extends StatelessWidget {
               ),
             ),
 
-            // Título para la sección de respuestas detalladas
             Text(
               'Respuestas:',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Divider(), // Línea separadora
-            // Genera una lista con cada pregunta y su detalle
+            const Divider(),
             ...List.generate(questions.length, (index) {
               final question = questions[index];
 
               return Container(
-                margin: const EdgeInsets.only(
-                  bottom: 16,
-                ), // Margen inferior entre preguntas
-                padding: const EdgeInsets.all(12), // Padding interno
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? const Color.fromARGB(
-                          255,
-                          44,
-                          44,
-                          44,
-                        ) // Fondo oscuro para modo oscuro
-                      : const Color.fromARGB(
-                          255,
-                          201,
-                          247,
-                          203,
-                        ), // Fondo verde claro para modo claro
-                  borderRadius: BorderRadius.circular(12), // Bordes redondeados
+                      ? const Color.fromARGB(255, 44, 44, 44)
+                      : const Color.fromARGB(255, 201, 247, 203),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isDark
                         ? const Color.fromARGB(255, 80, 80, 80)
@@ -167,9 +140,7 @@ class ResultadosScreenHardware extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withAlpha(
-                        (0.05 * 255).round(),
-                      ), // Sombra ligera
+                      color: Colors.black.withAlpha((0.05 * 255).round()),
                       blurRadius: 5,
                       offset: const Offset(0, 2),
                     ),
@@ -178,7 +149,6 @@ class ResultadosScreenHardware extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Muestra el número de pregunta y el texto
                     Text(
                       'Pregunta ${index + 1}: ${question.question}',
                       style: theme.textTheme.bodyLarge?.copyWith(
@@ -187,8 +157,7 @@ class ResultadosScreenHardware extends StatelessWidget {
                         color: theme.colorScheme.onPrimaryContainer,
                       ),
                     ),
-                    const SizedBox(height: 10), // Espaciado vertical
-                    // Muestra la respuesta correcta, diferenciando el tipo de pregunta
+                    const SizedBox(height: 10),
                     Text(
                       'Respuesta correcta: ${question.type == 'completar' ? question.answerText : question.options?[question.answerIndex ?? 0] ?? 'No disponible'}',
                       style: theme.textTheme.bodyLarge?.copyWith(
@@ -198,14 +167,14 @@ class ResultadosScreenHardware extends StatelessWidget {
                       ),
                     ),
 
-                    // Si la pregunta tiene explicación, la muestra con formato RichText
+                    // Aquí la única modificación: explicación con tamaño dinámico
                     if (question.explanation.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 6.0),
                         child: RichText(
                           text: TextSpan(
                             style: theme.textTheme.bodyLarge?.copyWith(
-                              fontSize: 16,
+                              fontSize: fontSize, // <- tamaño dinámico aquí
                               color: theme.colorScheme.onPrimaryContainer,
                             ),
                             children: [

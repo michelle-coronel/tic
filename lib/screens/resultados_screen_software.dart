@@ -236,7 +236,6 @@ class ResultadosScreenSoftware extends StatelessWidget {
                           'Explicación: ${question.explanation}',
                           style: theme.textTheme.bodyLarge?.copyWith(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
                             color: theme.colorScheme.onPrimaryContainer,
                           ),
                         ),
