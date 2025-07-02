@@ -188,22 +188,45 @@ class _SugerenciasScreenState extends State<SugerenciasScreen> {
                   onPressed: () {
                     // Valida el formulario completo
                     if (_formKey.currentState!.validate()) {
-                      // Si es válido, muestra un snackbar con mensaje de éxito
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('¡Mensaje enviado!')),
+                      // Si es válido, muestra un diálogo accesible de confirmación
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Semantics(
+                              header: true,
+                              child: const Text('Confirmación'),
+                            ),
+                            content: Semantics(
+                              liveRegion: true,
+                              child: const Text('¡Mensaje enviado con éxito!'),
+                            ),
+                            actions: [
+                              FocusScope(
+                                autofocus: true,
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    // Limpia las selecciones y el mensaje
+                                    setState(() {
+                                      categoriaSeleccionada = null;
+                                      asuntoSeleccionado = null;
+                                      mensajeController.clear();
+                                    });
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       );
-
-                      // Limpia las selecciones y el mensaje
-                      setState(() {
-                        categoriaSeleccionada = null;
-                        asuntoSeleccionado = null;
-                        mensajeController.clear();
-                      });
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber, // Fondo amarillo
-                    foregroundColor: Colors.black, // Texto negro
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text('Enviar', style: TextStyle(fontSize: 18)),
@@ -219,15 +242,15 @@ class _SugerenciasScreenState extends State<SugerenciasScreen> {
   // Método auxiliar para la decoración uniforme de los campos de texto y dropdown
   InputDecoration _inputDecoration(bool isDark) {
     return InputDecoration(
-      filled: true, // Fondo relleno para el input
+      filled: true,
       fillColor: isDark ? Colors.grey.shade700 : Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12), // Bordes redondeados
-        borderSide: BorderSide(color: Colors.grey.shade300), // Color del borde
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.grey.shade300),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12), // Bordes redondeados
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: Colors.grey.shade300),
       ),
     );

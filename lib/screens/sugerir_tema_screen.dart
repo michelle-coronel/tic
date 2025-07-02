@@ -162,17 +162,44 @@ class _SugerirTemaScreenState extends State<SugerirTemaScreen> {
                   onPressed: () {
                     // Al presionar, valida el formulario completo
                     if (_formKey.currentState!.validate()) {
-                      // Si es válido, muestra un mensaje y limpia los campos
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('¡Tema sugerido con éxito!'),
-                        ),
+                      // Si es válido, muestra un diálogo de confirmación accesible
+                      showDialog(
+                        context: context,
+                        barrierDismissible:
+                            false, // Para obligar a usar el botón OK y asegurar confirmación
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Semantics(
+                              // Etiqueta para lector de pantalla en el título
+                              header: true,
+                              child: const Text('Confirmación'),
+                            ),
+                            content: Semantics(
+                              liveRegion:
+                                  true, // Hace que lectores detecten el cambio inmediatamente
+                              child: const Text('¡Tema sugerido con éxito!'),
+                            ),
+                            actions: [
+                              FocusScope(
+                                autofocus: true, // Pone foco en el botón OK
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pop(); // Cierra el diálogo
+                                    // Limpia campos después de cerrar el diálogo
+                                    tituloController.clear();
+                                    setState(() {
+                                      categoriaSeleccionada = null;
+                                    });
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       );
-                      tituloController.clear(); // Limpia campo texto
-                      setState(() {
-                        categoriaSeleccionada =
-                            null; // Limpia selección dropdown
-                      });
                     }
                   },
                   style: ElevatedButton.styleFrom(

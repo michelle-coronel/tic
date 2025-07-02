@@ -251,19 +251,42 @@ class _SoporteScreenState extends State<SoporteScreen> {
                   onPressed: () {
                     // Valida el formulario antes de enviar
                     if (_formKey.currentState!.validate()) {
-                      // Muestra mensaje tipo snackbar confirmando envío
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('¡Soporte enviado!')),
+                      // Muestra un diálogo accesible de confirmación
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Semantics(
+                              header: true,
+                              child: const Text('Confirmación'),
+                            ),
+                            content: Semantics(
+                              liveRegion: true,
+                              child: const Text('¡Soporte enviado con éxito!'),
+                            ),
+                            actions: [
+                              FocusScope(
+                                autofocus: true,
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    // Limpia campos y resetea valores
+                                    setState(() {
+                                      nombreController.clear();
+                                      correoController.clear();
+                                      categoriaSeleccionada = null;
+                                      asuntoSeleccionado = null;
+                                      mensajeController.clear();
+                                    });
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       );
-
-                      // Limpia campos y resetea valores
-                      setState(() {
-                        nombreController.clear();
-                        correoController.clear();
-                        categoriaSeleccionada = null;
-                        asuntoSeleccionado = null;
-                        mensajeController.clear();
-                      });
                     }
                   },
                   style: ElevatedButton.styleFrom(
