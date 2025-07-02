@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Para manejar el estado global (SettingsProvider)
+import 'package:provider/provider.dart';
 
-import 'settings_provider.dart'; // Proveedor de ajustes (como tamaño de letra)
-import 'soporte_screen.dart'; // Pantalla de soporte
-import 'sugerencias_screen.dart'; // Pantalla de sugerencias
-import 'sugerir_tema_screen.dart'; // Pantalla para sugerir un nuevo tema
+import 'settings_provider.dart'; // Ajusta la ruta si es necesario
+import 'soporte_screen.dart';
+import 'sugerencias_screen.dart';
+import 'sugerir_tema_screen.dart';
+import 'accesibilidad_screen.dart'; // Importa la nueva pantalla
 
-// Pantalla de ajustes (configuraciones)
 class AjustesScreen extends StatefulWidget {
-  final Function(bool)
-  toggleTheme; // Función que permite cambiar entre modo claro/oscuro
-  final bool isDarkMode; // Indica si el modo oscuro está activado actualmente
+  final Function(bool) toggleTheme;
+  final bool isDarkMode;
 
   const AjustesScreen({
     super.key,
@@ -22,20 +21,16 @@ class AjustesScreen extends StatefulWidget {
   State<AjustesScreen> createState() => _AjustesScreenState();
 }
 
-// Estado de la pantalla de ajustes
 class _AjustesScreenState extends State<AjustesScreen> {
-  // Variables para mostrar u ocultar los menús desplegables
-  bool mostrarSlider =
-      false; // Muestra el slider para cambiar el tamaño de letra
-  bool mostrarAlineacion = false; // Muestra las opciones de alineación de texto
+  bool mostrarSlider = false;
+  bool mostrarAlineacion = false;
 
-  // Widget reutilizable para dar estilo a cada opción (con borde y espaciado)
   Widget _buildOptionBox(Widget child) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade400), // Borde gris claro
-        borderRadius: BorderRadius.circular(8), // Bordes redondeados
+        border: Border.all(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: child,
     );
@@ -43,32 +38,45 @@ class _AjustesScreenState extends State<AjustesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Obtiene el tamaño de fuente global desde el SettingsProvider
     double tamanioLetra = context.watch<SettingsProvider>().fontSize;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ajustes')), // Título de la app bar
-      // Hace que el contenido de la pantalla sea desplazable
+      appBar: AppBar(title: const Text('Ajustes')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0), // Padding alrededor del contenido
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Título de la sección "Global"
             const Text(
               'Global',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
-            // Opción: Modo nocturno (switch)
+            // Opción Accesibilidad
+            _buildOptionBox(
+              ListTile(
+                leading: const Icon(Icons.accessibility),
+                title: const Text('Accesibilidad'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AccesibilidadScreen(),
+                    ),
+                  );
+                },
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
+
+            // Opción: Modo nocturno
             _buildOptionBox(
               SwitchListTile(
                 title: const Text('Modo nocturno'),
-                value: widget.isDarkMode, // Estado actual del switch
-                onChanged:
-                    widget.toggleTheme, // Llama a la función para cambiar tema
-                secondary: const Icon(Icons.dark_mode), // Ícono a la izquierda
+                value: widget.isDarkMode,
+                onChanged: widget.toggleTheme,
+                secondary: const Icon(Icons.dark_mode),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
@@ -81,15 +89,12 @@ class _AjustesScreenState extends State<AjustesScreen> {
                     leading: const Icon(Icons.format_size),
                     title: const Text('Tamaño de la letra'),
                     onTap: () {
-                      // Alterna mostrar/ocultar el slider
                       setState(() {
                         mostrarSlider = !mostrarSlider;
                       });
                     },
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   ),
-
-                  // Si se activa mostrarSlider, se despliega el control
                   if (mostrarSlider)
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -99,48 +104,35 @@ class _AjustesScreenState extends State<AjustesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Escoja el tamaño'), // Etiqueta
-
+                          const Text('Escoja el tamaño'),
                           const SizedBox(height: 8),
-
-                          // Íconos A pequeño y A grande como referencia visual
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
-                              ExcludeSemantics(
-                                child: Text('A'),
-                              ), // Letra pequeña
-                              Expanded(child: SizedBox()), // Espaciador
+                              ExcludeSemantics(child: Text('A')),
+                              Expanded(child: SizedBox()),
                               ExcludeSemantics(
                                 child: Text(
                                   'A',
                                   style: TextStyle(fontSize: 24),
                                 ),
-                              ), // Letra grande
+                              ),
                             ],
                           ),
-
-                          // Slider para cambiar el tamaño
                           Slider(
-                            value: tamanioLetra, // Valor actual
-                            min: 12, // Valor mínimo
-                            max: 24, // Valor máximo
-                            divisions: 6, // Número de divisiones
-                            label: tamanioLetra
-                                .round()
-                                .toString(), // Etiqueta del valor
+                            value: tamanioLetra,
+                            min: 12,
+                            max: 24,
+                            divisions: 6,
+                            label: tamanioLetra.round().toString(),
                             onChanged: (value) {
-                              // Actualiza el tamaño de letra global
                               context.read<SettingsProvider>().updateFontSize(
                                 value,
                               );
                             },
                             activeColor: Colors.purple,
                           ),
-
                           const SizedBox(height: 8),
-
-                          // Botón para cerrar el menú desplegable
                           Align(
                             alignment: Alignment.centerRight,
                             child: ElevatedButton(
@@ -171,15 +163,12 @@ class _AjustesScreenState extends State<AjustesScreen> {
                     leading: const Icon(Icons.format_align_left),
                     title: const Text('Alineación de texto'),
                     onTap: () {
-                      // Alterna mostrar/ocultar las opciones de alineación
                       setState(() {
                         mostrarAlineacion = !mostrarAlineacion;
                       });
                     },
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   ),
-
-                  // Si mostrarAlineacion es true, muestra las opciones de alineación
                   if (mostrarAlineacion)
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -191,8 +180,6 @@ class _AjustesScreenState extends State<AjustesScreen> {
                         children: [
                           const Text('Escoja la alineación'),
                           const SizedBox(height: 8),
-
-                          // Muestra íconos de alineación (visual únicamente)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: const [
@@ -202,10 +189,7 @@ class _AjustesScreenState extends State<AjustesScreen> {
                               Icon(Icons.format_align_justify, size: 32),
                             ],
                           ),
-
                           const SizedBox(height: 8),
-
-                          // Botón para cerrar el menú
                           Align(
                             alignment: Alignment.centerRight,
                             child: ElevatedButton(
@@ -228,13 +212,12 @@ class _AjustesScreenState extends State<AjustesScreen> {
               ),
             ),
 
-            // Opción: Navegar a pantalla de sugerencias
+            // Opción: Sugerencias
             _buildOptionBox(
               ListTile(
                 leading: const Icon(Icons.feedback),
                 title: const Text('Sugerencias'),
                 onTap: () {
-                  // Navega a la pantalla SugerenciasScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -246,13 +229,12 @@ class _AjustesScreenState extends State<AjustesScreen> {
               ),
             ),
 
-            // Opción: Navegar a pantalla de soporte
+            // Opción: Soporte
             _buildOptionBox(
               ListTile(
                 leading: const Icon(Icons.support),
                 title: const Text('Soporte'),
                 onTap: () {
-                  // Navega a la pantalla SoporteScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const SoporteScreen()),
@@ -262,13 +244,12 @@ class _AjustesScreenState extends State<AjustesScreen> {
               ),
             ),
 
-            // Opción: Navegar a pantalla para sugerir nuevos temas
+            // Opción: Sugerir temas
             _buildOptionBox(
               ListTile(
                 leading: const Icon(Icons.lightbulb),
                 title: const Text('Sugerir temas'),
                 onTap: () {
-                  // Navega a la pantalla SugerirTemaScreen
                   Navigator.push(
                     context,
                     MaterialPageRoute(
