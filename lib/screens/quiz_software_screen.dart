@@ -26,6 +26,10 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
   bool _isCorrect = false; // Si la respuesta fue correcta
   String _textAnswer = ''; // Respuesta escrita para preguntas tipo completar
   final AudioPlayer _audioPlayer = AudioPlayer(); // Reproductor de sonidos
+  bool _usarModoAccesibleAutomaticamente(BuildContext context) {
+    return MediaQuery.of(context).accessibleNavigation &&
+        (_current == 3 || _current == 5); // Índices base 0: Preguntas 4 y 6
+  }
 
   late DateTime _startTime; // Tiempo cuando inicia el quiz
 
@@ -701,7 +705,8 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                   const SizedBox(height: 12),
 
                   // Botón para cambiar de modo si es tipo arrastrar
-                  if (q.type == 'arrastrar')
+                  if (q.type == 'arrastrar' &&
+                      !_usarModoAccesibleAutomaticamente(context))
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton.icon(
@@ -745,7 +750,8 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                   if (q.type == 'completar')
                     _buildCompletar(q)
                   else if (q.type == 'arrastrar')
-                    _modoAccesibleActivado
+                    _usarModoAccesibleAutomaticamente(context) ||
+                            _modoAccesibleActivado
                         ? _buildArrastrarAccesible(q)
                         : _buildArrastrar(q)
                   else
