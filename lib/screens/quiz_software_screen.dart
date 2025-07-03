@@ -18,7 +18,8 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
   late List<Question> _questions; // Lista con las preguntas cargadas
   int _current = 0; // Índice de la pregunta actual
   int _score = 0; // Puntaje acumulado
-
+  bool _modoAccesibleActivado =
+      false; // Para activar modo accesible manualmente
   int?
   _selectedIndex; // Índice de opción seleccionada para preguntas de opción múltiple
   bool _answered = false; // Si la pregunta ya fue respondida
@@ -116,6 +117,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
       _selectedIndex = null;
       _textAnswer = '';
       _isCorrect = false;
+      _modoAccesibleActivado = false;
       if (_current < _questions.length - 1) {
         _current++;
         _initDragItemsIfNeeded(); // Inicializa los items para la siguiente pregunta si es tipo arrastrar
@@ -131,6 +133,7 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
       _answered = false;
       _selectedIndex = null;
       _textAnswer = '';
+      _modoAccesibleActivado = false;
       if (_questions[_current].type == 'arrastrar') {
         _initDragItemsIfNeeded(); // Reinicia los items si es pregunta arrastrar
       }
@@ -695,12 +698,54 @@ class _QuizSoftwareScreenState extends State<QuizSoftwareScreen> {
                       color: textColor,
                     ),
                   ),
+                  const SizedBox(height: 12),
+
+                  // Botón para cambiar de modo si es tipo arrastrar
+                  if (q.type == 'arrastrar')
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            _modoAccesibleActivado = !_modoAccesibleActivado;
+                          });
+                        },
+                        icon: Icon(
+                          _modoAccesibleActivado
+                              ? Icons.touch_app
+                              : Icons.accessibility_new,
+                        ),
+                        // Boton modo accesible / Modo arrastrar
+                        label: Text(
+                          _modoAccesibleActivado
+                              ? 'Modo arrastrar'
+                              : 'Modo accesible',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _modoAccesibleActivado
+                              ? const Color.fromARGB(255, 156, 39, 176)
+                              : Color.fromARGB(255, 3, 95, 234),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 26,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 8,
+                        ),
+                      ),
+                    ),
+
                   const SizedBox(height: 30),
+
                   // Widget para la pregunta según tipo
                   if (q.type == 'completar')
                     _buildCompletar(q)
                   else if (q.type == 'arrastrar')
-                    MediaQuery.of(context).accessibleNavigation
+                    _modoAccesibleActivado
                         ? _buildArrastrarAccesible(q)
                         : _buildArrastrar(q)
                   else

@@ -122,53 +122,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Barra inferior de navegación con iconos personalizados
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex, // Ítem seleccionado
-        selectedItemColor: const Color.fromARGB(
-          255,
-          157,
-          42,
-          219,
-        ), // Color morado para seleccionado
-        unselectedItemColor: const Color.fromARGB(
-          255,
-          113,
-          111,
-          111,
-        ), // Gris para no seleccionado
-        type: BottomNavigationBarType
-            .fixed, // Muestra todos los iconos sin desplazamiento
+        currentIndex: _currentIndex,
+        selectedItemColor: const Color.fromARGB(255, 157, 42, 219),
+        unselectedItemColor: const Color.fromARGB(255, 113, 111, 111),
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.normal,
+          fontSize: 12,
+        ),
+        type: BottomNavigationBarType.fixed,
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Actualiza la pantalla según ícono pulsado
+            _currentIndex = index;
           });
         },
-        // Lista de ítems con iconos personalizados y etiquetas
         items: [
           BottomNavigationBarItem(
             icon: _buildImageIconWithLine(
               'assets/icons/home_icon.png',
-              _currentIndex == 0, // Activo si el índice es 0
+              _currentIndex == 0,
             ),
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
             icon: _buildImageIconWithLine(
               'assets/icons/lecciones_icon.png',
-              _currentIndex == 1, // Activo si el índice es 1
+              _currentIndex == 1,
             ),
             label: 'Lecciones',
           ),
           BottomNavigationBarItem(
             icon: _buildImageIconWithLine(
               'assets/icons/quiz_icon.png',
-              _currentIndex == 2, // Activo si el índice es 2
+              _currentIndex == 2,
             ),
             label: 'Quiz',
           ),
           BottomNavigationBarItem(
             icon: _buildImageIconWithLine(
               'assets/icons/ajustes_icon.png',
-              _currentIndex == 3, // Activo si el índice es 3
+              _currentIndex == 3,
             ),
             label: 'Ajustes',
           ),

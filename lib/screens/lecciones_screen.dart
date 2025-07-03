@@ -210,6 +210,19 @@ class LeccionesScreen extends StatelessWidget {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),
+                              )
+                            else
+                              Text(
+                                categoria.activo
+                                    ? '¡Habilitado!'
+                                    : 'Deshabilitado',
+                                style: TextStyle(
+                                  color: categoria.activo
+                                      ? Colors.purple
+                                      : Colors.grey,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                           ],
                         ),
